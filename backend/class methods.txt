@@ -1,0 +1,98 @@
+# ==========================
+# DataLoaderCleaner Methods
+# ==========================
+
+# 1. load_data(file_path)
+# ------------------------
+# Loads a CSV file from the specified path and stores it as self.raw_df.
+# Returns the raw DataFrame.
+# Usage:
+# df = obj.load_data("data.csv")
+
+# 2. clean_data(df)
+# -----------------
+# Cleans the input DataFrame by:
+# - Dropping missing values
+# - Converting specific columns to categorical type
+# - Converting specific columns to integers
+# - Saving a backup of categorical columns
+# Stores the cleaned DataFrame in self.clean_df and returns it.
+# Usage:
+# clean_df = obj.clean_data(df)
+
+# 3. summarize_missing(df)
+# ------------------------
+# Returns a summary of missing values per column (only columns with missing data).
+# Usage:
+# obj.summarize_missing(df)
+
+# 4. summarize_duplicates(df)
+# ---------------------------
+# Returns the number of duplicate rows in the DataFrame.
+# Usage:
+# obj.summarize_duplicates(df)
+
+# 5. summarize_overview(df)
+# -------------------------
+# Returns a dictionary summary of the DataFrame including:
+# - Shape, data types, basic statistics, and head preview
+# - Year range and time span if 'year' column exists
+# Usage:
+# overview = obj.summarize_overview(df)
+
+# 6. compare_raw_clean()
+# ----------------------
+# Compares raw and cleaned DataFrames in terms of:
+# - Shape
+# - Total missing values before and after cleaning
+# - Number of dropped rows
+# Returns a comparison dictionary.
+# Usage:
+# obj.compare_raw_clean()
+
+# 7. get_categorical_backup()
+# ---------------------------
+# Returns the backup of the original categorical columns from the cleaned data.
+# Usage:
+# obj.get_categorical_backup()
+
+
+# ==========================
+# FeatureEngineering Methods
+# ==========================
+
+# 1. get_season(month: int) -> str
+# --------------------------------
+# Static method that returns the season name ('Winter', 'Spring', 'Summer', or 'Fall')
+# based on the numeric month input (1-12).
+# Usage:
+# season = FeatureEngineering.get_season(4)  # returns 'Spring'
+
+# 2. transform(df: pd.DataFrame) -> pd.DataFrame
+# ----------------------------------------------
+# Takes a DataFrame and adds engineered features related to flight delays, cancellations,
+# diversions, delay cause percentages, season, month-year string, carrier and airport stats,
+# flags for disruption and high delays, and combined season-airport delay rates.
+# Returns the transformed DataFrame with all new columns added.
+# Usage:
+# fe = FeatureEngineering()
+# df_transformed = fe.transform(df)
+
+
+🔍 1. FlightDataEDA Class
+A general-purpose EDA tool for any flight dataset. It includes:
+
+summary_statistics() – Descriptive statistics for all numeric features.
+
+missing_values_report() – Count and percent of missing values.
+
+value_counts(column) – Value counts and distribution percentage for any column.
+
+correlation_matrix() – Interactive heatmap of correlations between numeric columns.
+
+plot_histogram(column) – Histogram for distribution analysis.
+
+plot_boxplot(column, by) – Boxplot to show spread and outliers, optionally grouped.
+
+plot_scatter(x, y, color) – 2D scatter plot with optional color dimension.
+

@@ -1,0 +1,17 @@
+{
+    "Best Overall (Penalty Class 2 False Positives)": [
+        0.4,
+        0.4,
+        0.2
+    ],
+    "Best Recall (High Confidence Class 2)": [
+        0.2,
+        0.2,
+        0.6
+    ],
+    "Best Precision (Penalty Class 2 False Positives)": [
+        0.4,
+        0.4,
+        0.2
+    ]
+}

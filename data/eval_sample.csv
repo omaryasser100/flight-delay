@@ -1,0 +1,11 @@
+year,month,carrier,carrier_name,airport,airport_name,arr_flights,arr_del15,carrier_ct,weather_ct,nas_ct,security_ct,late_aircraft_ct,arr_cancelled,arr_diverted,arr_delay,carrier_delay,weather_delay,nas_delay,security_delay,late_aircraft_delay
+2023,5,9E,Endeavor Air Inc.,MYR,"Myrtle Beach, SC: Myrtle Beach International",63.0,6.0,2.39,0.0,0.61,0.0,3.0,0.0,0.0,255.0,118.0,0.0,22.0,0.0,115.0
+2015,5,OO,SkyWest Airlines Inc.,ACV,"Arcata/Eureka, CA: California Redwood Coast Humboldt County",98.0,33.0,3.93,0.0,1.83,0.0,27.25,1.0,0.0,1658.0,236.0,0.0,61.0,0.0,1361.0
+2022,5,WN,Southwest Airlines Co.,MEM,"Memphis, TN: Memphis International",217.0,68.0,38.21,2.28,5.55,0.0,21.95,0.0,0.0,3469.0,1824.0,122.0,275.0,0.0,1248.0
+2017,2,VX,Virgin America,DCA,"Washington, DC: Ronald Reagan Washington National",104.0,14.0,6.45,2.32,0.5,0.0,4.73,0.0,0.0,637.0,353.0,85.0,23.0,0.0,176.0
+2021,9,YV,Mesa Airlines Inc.,RSW,"Fort Myers, FL: Southwest Florida International",47.0,2.0,0.0,0.0,0.0,0.0,2.0,0.0,0.0,53.0,0.0,0.0,0.0,0.0,53.0
+2022,1,OO,SkyWest Airlines Inc.,HSV,"Huntsville, AL: Huntsville International-Carl T Jones Field",51.0,11.0,9.0,1.0,0.0,0.0,1.0,2.0,0.0,709.0,617.0,47.0,0.0,0.0,45.0
+2022,4,OO,SkyWest Airlines Inc.,RST,"Rochester, MN: Rochester International",60.0,11.0,10.0,0.0,1.0,0.0,0.0,0.0,0.0,611.0,376.0,0.0,235.0,0.0,0.0
+2022,4,YX,Republic Airline,MCI,"Kansas City, MO: Kansas City International",366.0,62.0,16.0,0.21,22.76,0.0,23.02,4.0,1.0,2929.0,786.0,21.0,674.0,0.0,1448.0
+2022,6,AA,American Airlines Inc.,GSP,"Greer, SC: Greenville-Spartanburg International",56.0,16.0,8.21,0.0,2.86,0.0,4.93,3.0,1.0,1100.0,525.0,0.0,83.0,0.0,492.0
+2013,11,EV,ExpressJet Airlines Inc.,ORF,"Norfolk, VA: Norfolk International",255.0,59.0,23.78,0.03,18.54,0.0,16.66,10.0,2.0,3029.0,1179.0,2.0,876.0,0.0,972.0
