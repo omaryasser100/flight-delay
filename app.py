@@ -94,6 +94,48 @@ st.markdown(
     ''', unsafe_allow_html=True
 )
 
+with st.expander(" Column Explanations", expanded=False):
+    st.markdown("""
+**Original Columns:**
+- `year`: Year of the flight record.
+- `month`: Month of the record (1 = Jan, ..., 12 = Dec).
+- `carrier`: Airline code (e.g., UA, DL).
+- `airport`: Destination airport code.
+- `arr_flights`: Total arriving flights at the airport.
+- `arr_del15`: Flights delayed more than 15 minutes.
+- `arr_cancelled`: Flights that were cancelled.
+- `arr_diverted`: Flights diverted to another airport.
+- `carrier_delay`: Delay caused by the airline.
+- `weather_delay`: Delay due to bad weather.
+- `nas_delay`: Delay from air traffic control or congestion.
+- `security_delay`: Delay from airport security issues.
+- `late_aircraft_delay`: Delay from late-arriving aircraft.
+
+**Engineered Features:**
+- `delay_ratio`: Percentage of flights that were delayed.
+- `cancellation_rate`: Percentage of cancelled flights.
+- `diversion_rate`: Percentage of diverted flights.
+- `disrupted`: 1 if flight was delayed or cancelled, else 0.
+- `total_delay`: Sum of all delay minutes.
+- `carrier_delay_pct`: % of delay due to the airline.
+- `weather_delay_pct`: % of delay due to weather.
+- `nas_delay_pct`: % of delay due to NAS (airspace).
+- `security_delay_pct`: % of delay due to security.
+- `late_aircraft_delay_pct`: % of delay due to late aircraft.
+- `year_month`: Combined year and month (e.g., 2023-01).
+- `season`: Season name based on the month.
+- `carrier_total_flights`: Total flights for the airline.
+- `airport_delay_rate`: Average delay rate per airport.
+- `delay_risk_level`: 0 = Low, 1 = Medium, 2 = High delay risk.
+- `mean_delay_per_flight`: Average delay per flight (in minutes).
+- `dominant_delay_cause`: The biggest cause of delay for that flight.
+- `month_delay_rate`: Overall delay rate for the month.
+- `carrier_vs_airport_ratio`: How much the airline contributed to delays compared to the airport/traffic. Higher = mostly airline's fault.
+- `season_airport_combo`: A combination like "Winter_JFK", showing airport + season.
+- `season_airport_delay_rate`: Average delay rate for that season-airport pair.
+    """)
+
+
 # ===================== 🔢 KPI CARDS =====================
 def render_kpi(title, value, color="#0066cc"):
     st.markdown(f'''

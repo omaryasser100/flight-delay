@@ -73,47 +73,48 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========== STRATEGIC INSIGHTS ==========
-insights = [
-    ("1. Fragile Recovery Demands Smarter Forecasting", 
-     "Flight volumes declined again in 2023 despite earlier post-COVID recovery, highlighting a fragile demand environment. Airlines and airports should implement dynamic forecasting systems that account for macroeconomic signals, weather disruptions, and health indicators to avoid resource misalignment and revenue shortfalls."
+insights =insights = [
+    ("1. Demand is Still Unstable — Plan Smarter", 
+     "Flight traffic dropped again in 2023, showing that recovery is still uncertain. Airlines and airports should use smarter forecasting tools that track things like the economy, weather, and health events to avoid wasting resources or losing revenue."
     ),
     
-    ("2. Persistent Delays Signal Operational Saturation", 
-     "Delay rates have exceeded pre-pandemic levels, pointing to systemic strain across airside and ground operations. Stakeholders should upgrade queue management, implement real-time gate flow analytics, and enhance coordination between carriers and ATC to absorb volume spikes and reduce inefficiencies."
+    ("2. High Delays Show Systems Are Overloaded", 
+     "Delays are now worse than before the pandemic. This suggests that airport operations are under pressure. To fix this, improve how passengers and planes move through the airport and improve coordination between airlines and air traffic control."
     ),
     
-    ("3. Seasonal Delay Patterns Require Targeted Planning", 
-     "Summer delays are often tied to crew and turnaround issues, while winter disruptions are driven by severe weather. Response protocols must be customized per season—flexible staffing in summer and early rerouting in winter—rather than applying generic disruption plans."
+    ("3. Delay Patterns Change with the Seasons", 
+     "Summer delays are often due to staff shortages and slow turnarounds. Winter delays are usually caused by weather. Each season needs a different plan: add more flexible staff in summer and focus on faster rerouting in winter."
     ),
     
-    ("4. Airline-Controlled Issues Dominate Delay Causes", 
-     "Most delays originate from controllable airline operations such as late aircraft readiness, inefficient turnaround, and crew scheduling conflicts. Prioritizing predictive maintenance, real-time dispatching, and improved SOP adherence can significantly reduce these delays."
+    ("4. Most Delays Come from the Airlines Themselves", 
+     "Many delays happen because of things airlines can control — like late planes, poor scheduling, or slow processes. Fixing this means better maintenance, faster communication, and sticking to better internal procedures."
     ),
     
-    ("5. Carrier Performance Disparities Reveal Optimization Gaps", 
-     "Some airlines consistently underperform in delay rates compared to peers. Industry-wide benchmarking, performance transparency, and cross-carrier learning can raise operational standards and reduce variance across the network."
+    ("5. Some Airlines Perform Much Worse Than Others", 
+     "Not all airlines handle delays equally. To close the gap, the industry should compare performance, be transparent, and share best practices to help all carriers improve."
     ),
     
-    ("6. Peak Season Breakdowns Point to Fragile Schedules", 
-     "Carriers experiencing operational decline during peak travel periods may be lacking resilience mechanisms. Stress-testing summer schedules and integrating buffers—such as standby crew and aircraft—can improve system stability during demand surges."
+    ("6. Busy Seasons Expose Weaknesses", 
+     "Some airlines struggle more during peak travel times. These problems can be reduced by testing schedules ahead of time and adding backup crews and planes during busy periods."
     ),
     
-    ("7. Airport Efficiency Is Not Solely Volume Dependent", 
-     "Airports with similar traffic profiles show varying delay outcomes. High-performing hubs optimize gate allocation, ground routing, and terminal flow. Underperforming airports should prioritize localized bottleneck analysis and surface logistics upgrades."
+    ("7. Airport Efficiency Isn’t Only About Size", 
+     "Airports with similar traffic levels often show very different delay records. The best ones manage gates, ground traffic, and passenger flow better. Others should study their specific issues and improve those areas first."
     ),
     
-    ("8. Delay Drivers Are Location-Specific", 
-     "Airports experience distinct dominant causes—ranging from airspace congestion to seasonal weather or carrier operations. Localized mitigation strategies tailored to each airport’s disruption profile are more effective than universal solutions."
+    ("8. Delay Causes Vary by Airport", 
+     "Different airports face different problems — some deal with traffic congestion, others with bad weather. The best solutions are local ones that match each airport’s specific delay patterns."
     ),
     
-    ("9. Low Traffic Doesn’t Guarantee Low Risk", 
-     "Despite lower traffic, winter remains the most disrupted season, while fall often performs best. Adopting fall-season practices such as proactive crew assignment and flexible slot planning may improve resilience in high-risk months."
+    ("9. Less Traffic Doesn’t Always Mean Fewer Delays", 
+     "Winter has fewer flights but still the most delays. Fall usually performs best. Using strategies that work well in fall, like smart crew planning and flexible scheduling, could help improve winter performance too."
     ),
     
-    ("10. Risk Stratification Enables Proactive Scheduling", 
-     "A large portion of flights fall into medium or high delay-risk segments. Integrating delay risk scores into scheduling workflows allows operators to reroute, reschedule, or preemptively adjust high-risk flights to minimize network-wide impact."
+    ("10. Knowing Risk Helps Plan Better Flights", 
+     "Many flights fall into medium or high delay-risk categories. Using delay risk scores when scheduling flights helps avoid problems by adjusting or rescheduling high-risk flights ahead of time."
     )
 ]
+
 
 for title, body in insights:
     st.markdown(f"""
