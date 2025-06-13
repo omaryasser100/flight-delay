@@ -1,0 +1,29 @@
+
+SECTION 1: DATA EXPLANATION
+
+This dataset provides monthly-level flight performance data across U.S. airports and airlines. Each column gives insight into the volume, type, and causes of flight delays.
+
+COLUMN EXPLANATIONS:
+
+- year: Calendar year of the data. Helps track long-term trends.
+- month: Month of the flight. Useful for seasonal pattern detection.
+- carrier_name: The airline operating the flight. Key for comparing airline performance.
+- airport_name: The destination airport. Important for identifying delay hotspots.
+- arr_flights: Total arriving flights. Used to calculate delay rates.
+- arr_del15: Flights delayed 15+ minutes. Measures delay frequency.
+- carrier_ct: Delays caused by airline issues (e.g., maintenance, crew). Reflects internal problems.
+- weather_ct: Delays due to weather (e.g., storms). Highlights uncontrollable external factors.
+- nas_ct: Delays from NAS (e.g., air traffic, airport congestion). Represents system-level issues.
+- security_ct: Delays from security problems (e.g., threats). Rare but critical.
+- late_aircraft_ct: Delays due to incoming late flights. Shows cascading delay effects.
+- arr_cancelled: Number of canceled flights. Captures major disruptions.
+- arr_diverted: Flights diverted to other airports. Reflects rare but impactful events.
+- carrier_delay: Total delay minutes from carrier-related causes. Shows delay severity.
+- weather_delay: Minutes lost due to weather. Quantifies weather impact.
+- nas_delay: Minutes lost due to NAS issues. Measures airspace/system inefficiencies.
+- security_delay: Minutes lost due to security events.
+- late_aircraft_delay: Minutes lost due to previous flight delays. Key for understanding ripple effects.
+- arr_delay: Total arrival delay in minutes. Core performance indicator.
+
+SUMMARY:
+This dataset allows us to understand not just how many flights are delayed, but also **why**, **where**, and **how badly**. Each feature is important for analyzing performance, identifying causes, and building prediction models.

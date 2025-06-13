@@ -1,0 +1,9 @@
+fastapi==0.110.0
+uvicorn==0.29.0
+langchain==0.1.14
+langchain-community==0.0.34
+sentence-transformers==2.2.2
+faiss-cpu==1.7.4
+transformers==4.41.0
+huggingface_hub==0.23.1
+pydantic==1.10.12
