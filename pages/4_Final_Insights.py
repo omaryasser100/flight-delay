@@ -13,6 +13,20 @@ from utils.layout import (
 # ========== PAGE CONFIG ==========
 st.set_page_config(page_title="Business Insights", layout="wide", initial_sidebar_state="expanded")
 
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body, [class*="css"] {
+            font-family: 'Roboto', sans-serif;
+        }
+        .welcome-text {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
 # ========== DARK MODE & TOKEN INIT ==========
 query_params = st.query_params
 dark_mode_param = query_params.get("dark", "0") == "1"
@@ -127,7 +141,7 @@ for title, body in insights:
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         ">
         <h4 style="margin-top:0;">{title}</h4>
-        <p style="font-size: 0.95rem; line-height: 1.6;">{body}</p>
+        <p style="font-size: 0.95rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">{body}</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -155,7 +169,7 @@ st.markdown("""
     text-align: center;
     padding: 1rem 0;
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.9rem; font-family: 'Roboto', sans-serif;
     text-shadow: 0 0 3px rgba(0,0,0,0.5);
 '>
 Flight Delay Dashboard v1.0 — Built by Omar Yasser
