@@ -15,6 +15,20 @@ from backend.visual_explorer import VisualExplorer
 # ========== PAGE CONFIG ==========
 st.set_page_config(page_title="Explore Data", layout="wide", initial_sidebar_state="expanded")
 
+# ========== 🌐 LOAD GLOBAL FONTS ==========
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body, [class*="css"] {
+            font-family: 'Roboto', sans-serif;
+        }
+        .welcome-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ========== DARK MODE & TOKEN INIT ==========
 query_params = st.query_params
 dark_mode_param = query_params.get("dark", "0") == "1"
@@ -34,7 +48,7 @@ col1, col2 = st.columns([6, 1])
 with col1:
     now = datetime.now()
     greeting = "Good morning" if now.hour < 12 else "Good afternoon" if now.hour < 18 else "Good evening"
-    st.markdown(f"<div class='welcome-text' style='color:#eee; font-size: 1rem;'>{greeting}, <b>User</b>!</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='welcome-text'>{greeting}, <b>User</b>!</div>", unsafe_allow_html=True)
     render_clock()
 
 with col2:
@@ -128,7 +142,7 @@ c3.metric("Count", f"{most_common_count:,}")
 # ========== FOOTER ==========
 st.markdown("""
 <hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
-<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem;'>
+<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem; font-family: Roboto, sans-serif;'>
 Explore Page — Part of the Flight Delay Dashboard by <b>Omar Yasser</b>
 </div>
 """, unsafe_allow_html=True)
