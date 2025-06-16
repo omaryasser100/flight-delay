@@ -22,6 +22,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ===================== 🌐 LOAD GLOBAL FONTS =====================
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body, [class*="css"] {
+            font-family: 'Roboto', sans-serif;
+        }
+        .welcome-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ===================== 🧠 INIT SESSION STATE =====================
 query_params = st.query_params
 dark_mode_param = query_params.get("dark", "0") == "1"
@@ -72,11 +86,13 @@ st.markdown(
         background: rgba(255,255,255,0.9);
         border-left: 5px solid #1f77b4;
         padding: 1.2rem 2rem;
+        color: #000;
         border-radius: 10px;
         font-size: 1.05rem;
         line-height: 1.6;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         margin-top: 1rem;
+        font-family: 'Roboto', sans-serif;
     ">
     <b>Project Summary:</b><br>
     This interactive dashboard provides a comprehensive analysis of monthly flight performance across U.S. airports and airlines.
@@ -94,45 +110,60 @@ st.markdown(
     ''', unsafe_allow_html=True
 )
 
-with st.expander(" Column Explanations", expanded=False):
+with st.expander("📊 Column Explanations", expanded=False):
     st.markdown("""
-**Original Columns:**
-- `year`: Year of the flight record.
-- `month`: Month of the record (1 = Jan, ..., 12 = Dec).
-- `carrier`: Airline code (e.g., UA, DL).
-- `airport`: Destination airport code.
-- `arr_flights`: Total arriving flights at the airport.
-- `arr_del15`: Flights delayed more than 15 minutes.
-- `arr_cancelled`: Flights that were cancelled.
-- `arr_diverted`: Flights diverted to another airport.
-- `carrier_delay`: Delay caused by the airline.
-- `weather_delay`: Delay due to bad weather.
-- `nas_delay`: Delay from air traffic control or congestion.
-- `security_delay`: Delay from airport security issues.
-- `late_aircraft_delay`: Delay from late-arriving aircraft.
+**🟦 Original Columns:**
 
-**Engineered Features:**
-- `delay_ratio`: Percentage of flights that were delayed.
-- `cancellation_rate`: Percentage of cancelled flights.
-- `diversion_rate`: Percentage of diverted flights.
-- `disrupted`: 1 if flight was delayed or cancelled, else 0.
-- `total_delay`: Sum of all delay minutes.
-- `carrier_delay_pct`: % of delay due to the airline.
-- `weather_delay_pct`: % of delay due to weather.
-- `nas_delay_pct`: % of delay due to NAS (airspace).
-- `security_delay_pct`: % of delay due to security.
-- `late_aircraft_delay_pct`: % of delay due to late aircraft.
-- `year_month`: Combined year and month (e.g., 2023-01).
-- `season`: Season name based on the month.
-- `carrier_total_flights`: Total flights for the airline.
-- `airport_delay_rate`: Average delay rate per airport.
-- `delay_risk_level`: 0 = Low, 1 = Medium, 2 = High delay risk.
-- `mean_delay_per_flight`: Average delay per flight (in minutes).
-- `dominant_delay_cause`: The biggest cause of delay for that flight.
-- `month_delay_rate`: Overall delay rate for the month.
-- `carrier_vs_airport_ratio`: How much the airline contributed to delays compared to the airport/traffic. Higher = mostly airline's fault.
-- `season_airport_combo`: A combination like "Winter_JFK", showing airport + season.
-- `season_airport_delay_rate`: Average delay rate for that season-airport pair.
+- `year`: Year of the record — used to analyze long-term trends.
+- `month`: Month number (1–12) — useful for detecting seasonal variations.
+- `carrier`: Airline IATA code (e.g., UA, DL) — for segmenting by airline.
+- `carrier_name`: Full airline name — used for visuals only.
+- `airport`: Destination airport IATA code — for location-specific analysis.
+- `airport_name`: Full airport name — used for display, not modeling.
+- `arr_flights`: Total arriving flights — denominator for all rate calculations.
+- `arr_del15`: Flights delayed more than 15 minutes — defines primary delay events.
+- `arr_cancelled`: Number of cancelled flights — reflects service interruptions.
+- `arr_diverted`: Flights that were diverted — shows operational irregularities.
+- `carrier_ct`: Count of delays attributed to the airline.
+- `weather_ct`: Count of delays due to adverse weather.
+- `nas_ct`: Count of delays from air traffic or airspace congestion (NAS).
+- `security_ct`: Count of delays caused by security issues.
+- `late_aircraft_ct`: Count of delays caused by late incoming aircraft.
+- `carrier_delay`: Total minutes delayed due to carrier.
+- `weather_delay`: Delay duration caused by weather.
+- `nas_delay`: Delay duration due to NAS.
+- `security_delay`: Delay duration due to security.
+- `late_aircraft_delay`: Delay duration due to late aircraft.
+- `arr_delay`: Total delay in minutes — sum of all delays per row.
+
+
+**🟧 Engineered Features:**
+
+- `delay_ratio` *(engineered)*: Proportion of flights delayed more than 15 minutes — core target for delay prediction.
+- `cancellation_rate` *(engineered)*: Cancelled flights divided by total flights — detects unreliability patterns.
+- `diversion_rate` *(engineered)*: Rate of flight diversions — flags operational stress.
+- `disrupted` *(engineered)*: 1 if the flight was delayed or cancelled — binary for classification.
+- `total_delay` *(engineered)*: Combined delay minutes from all causes — foundation for delay contribution analysis.
+- `carrier_delay_pct` *(engineered)*: Share of delay caused by the airline.
+- `weather_delay_pct` *(engineered)*: Share of delay caused by weather.
+- `nas_delay_pct` *(engineered)*: Share of delay from NAS.
+- `security_delay_pct` *(engineered)*: Share of delay from security-related issues.
+- `late_aircraft_delay_pct` *(engineered)*: Share of delay from inbound aircraft.
+- `year_month` *(engineered)*: Combined year and month in `YYYY-MM` format — useful for trend plots.
+- `season` *(engineered)*: Season name (`Winter`, `Spring`, etc.) from the month — captures seasonal delay behavior.
+- `carrier_total_flights` *(engineered)*: Total number of flights by the carrier — used for normalization.
+- `airport_delay_rate` *(engineered)*: Average delay ratio at the airport level — enables cross-airport benchmarking.
+- `delay_risk_level` *(engineered)*: Delay severity class:  
+  - `0 = Low (≤ 20%)`,  
+  - `1 = Medium (≤ 40%)`,  
+  - `2 = High (> 40%)` — target for classification.
+- `mean_delay_per_flight` *(engineered)*: Delay minutes divided by arriving flights — used in regression models.
+- `dominant_delay_cause` *(engineered)*: The delay type (cause) that contributed the most per row — useful for root cause insights.
+- `month_delay_rate` *(engineered)*: Delay rate averaged across all rows in the same month — captures seasonality.
+- `carrier_vs_airport_ratio` *(engineered)*: Measures if delay was mostly caused by the airline (`>1`) vs the system (`<1`).
+- `season_airport_combo` *(engineered)*: Combination of `season` and `airport` (e.g., `Winter_JFK`) — used for pattern grouping.
+- `season_airport_delay_rate` *(engineered)*: Delay ratio for each (season, airport) pair — detects environmental trends.
+
     """)
 
 
@@ -143,9 +174,11 @@ def render_kpi(title, value, color="#0066cc"):
         margin: 0.5rem;
         padding: 1rem;
         background: rgba(255, 255, 255, 0.8);
+        color: #000;
         border-radius: 10px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.15);
         border-left: 5px solid {color};
+        font-family: 'Roboto', sans-serif;
     ">
         <div style="font-size: 15px; color: #333;">{title}</div>
         <div style="font-size: 24px; font-weight: 700; color: #111;">{value}</div>
@@ -181,10 +214,9 @@ st.pyplot(eda.correlation_matrix())
 st.markdown(
     '''
     <hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
-    <div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem;'>
+    <div style='text-align: center; padding: 1rem 0; color: #000; font-size: 0.9rem; font-family: Roboto, sans-serif;'>
     Built with by <b>Omar Yasser</b> — Flight Delay Dashboard v1.0
     </div>
     ''',
     unsafe_allow_html=True
-    
 )
