@@ -18,6 +18,20 @@ from utils.layout import (
 # ========================== PAGE CONFIG ==========================
 st.set_page_config(page_title="Machine Learning", layout="wide", initial_sidebar_state="expanded")
 
+st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body, [class*="css"] {
+            font-family: 'Roboto', sans-serif;
+        }
+        .welcome-text {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
 
 # ========================== DARK MODE STATE ==========================
 query_params = st.query_params
@@ -283,7 +297,7 @@ with tab2:
 # ========================== FOOTER ==========================
 st.markdown("""
 <hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
-<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem;'>
+<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem; font-family: 'Roboto', sans-serif;'>
 Machine Learning Page — Part of the Flight Delay Dashboard by <b>Omar Yasser</b>
 </div>
 """, unsafe_allow_html=True)
