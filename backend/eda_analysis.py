@@ -343,41 +343,41 @@ class FlightDataAnalysis:
 
 
     def delay_cause_breakdown_top3_carriers(self):
-        # ✅ Step 1: Get top 3 carriers by total flight volume
-        top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
+        # Step 1: Get top 3 carriers by total flights
+        top_3_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index.tolist()
 
-        # ✅ Step 2: Filter dataset to only those top 3
-        df = self.df[self.df['carrier_name'].isin(top_3)].copy()
+        # Step 2: Filter only top 3 data
+        df = self.df[self.df['carrier_name'].isin(top_3_carriers)].copy()
 
-        # ✅ Step 3: Aggregate delay causes
-        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
+        # Step 3: Aggregate delay causes
+        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum()
 
-        # ✅ Step 4: Sort by total delay and drop extra
-        delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
-        delay_sum = delay_sum.sort_values(by='total', ascending=True).drop(columns='total')
+        # Step 4: Sort by total delay and keep top 3
+        delay_sum['Total'] = delay_sum.sum(axis=1)
+        delay_sum = delay_sum.sort_values('Total', ascending=True).drop(columns='Total')
 
-        # ✅ Step 5: Melt and explicitly set category order
-        melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
-        melted['carrier_name'] = pd.Categorical(
-            melted['carrier_name'],
-            categories=delay_sum['carrier_name'].tolist(),  # maintain sort order
-            ordered=True
-        )
+        # Step 5: Melt for plotting
+        melted = delay_sum.reset_index().melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
 
-        # ✅ Step 6: Plot with proper layout
-        fig, ax = plt.subplots(figsize=(10, 5))
+        # 🔒 Enforce x-axis order by converting to categorical (kills ghost bars)
+        carrier_order = delay_sum.index.tolist()
+        melted['carrier_name'] = pd.Categorical(melted['carrier_name'], categories=carrier_order, ordered=True)
+
+        # Step 6: Plot
+        fig, ax = plt.subplots(figsize=(9, 5))
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
 
         ax.set_title("Top 3 Carriers: Delay Cause Breakdown", fontsize=12)
-        ax.set_ylabel("Total Delay Minutes", fontsize=10)
         ax.set_xlabel("Carrier", fontsize=10)
+        ax.set_ylabel("Total Delay Minutes", fontsize=10)
         ax.tick_params(axis='x', labelrotation=45, labelsize=9)
         ax.tick_params(axis='y', labelsize=9)
-        ax.grid(axis='y', linestyle='--', alpha=0.3)
+        ax.grid(axis='y', linestyle='--', alpha=0.4)
         ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
 
         fig.tight_layout()
         return fig
+
 
 
 
