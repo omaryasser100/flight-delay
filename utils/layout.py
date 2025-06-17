@@ -151,7 +151,7 @@ def render_sidebar_chatbot():
 
         # Show response if query is submitted
         if query:
-            st.markdown("#### ✈️ Answer")
-            with st.spinner("🧠 Thinking..."):
+            st.markdown("####  Answer")
+            with st.spinner(" Thinking..."):
                 response = query_huggingface_api(query)
                 st.write(response)
