@@ -1,651 +1,482 @@
-import streamlit as st
-from datetime import datetime
-import random
-from streamlit_autorefresh import st_autorefresh
-
-# === Layout and Modules ===
-from utils.layout import (
-    set_background,
-    render_sidebar,
-    render_sidebar_chatbot,
-    render_clock,
-    render_title_bar
-)
-from backend.data_loader_cleaner import DataLoaderCleaner
-from backend.feature_engineering import FeatureEngineering
-from backend.eda_analysis import FlightDataAnalysis, UnivariateAnalyzer
-
-# === PAGE CONFIG ===
-st.set_page_config(page_title="Data Analysis", layout="wide", initial_sidebar_state="expanded")
-
-st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        html, body, [class*="css"] {
-            font-family: 'Roboto', sans-serif;
-        }
-        .welcome-text {
-            font-size: 1.3rem;
-            font-weight: 500;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-
-# === DARK MODE & TOKEN INIT ===
-query_params = st.query_params
-dark_mode_param = query_params.get("dark", "0") == "1"
-
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = dark_mode_param
-if "token" not in st.session_state:
-    st.session_state.token = random.randint(1000, 999999)
-
-# === DASHBOARD TITLE (CENTERED) ===
-render_title_bar()
-
-# === CLOCK + DARK MODE TOGGLE ===
-col1, col2 = st.columns([6, 1])
-now = datetime.now()
-greeting = "Good morning" if now.hour < 12 else "Good afternoon" if now.hour < 18 else "Good evening"
-
-with col1:
-    st.markdown(f"<div class='welcome-text'>{greeting}, <b>User</b>!</div>", unsafe_allow_html=True)
-    render_clock()
-
-with col2:
-    toggle_key = f"dark_toggle_{st.session_state.token}"
-    new_mode = st.toggle("🌙", value=st.session_state.dark_mode, key=toggle_key)
-    if new_mode != st.session_state.dark_mode:
-        st.session_state.dark_mode = new_mode
-        st.session_state.token = random.randint(1000, 999999)
-        st.query_params["dark"] = "1" if new_mode else "0"
-        st.markdown("<meta http-equiv='refresh' content='0'>", unsafe_allow_html=True)
-
-# === BACKGROUND VIDEO ===
-light_video = "https://res.cloudinary.com/dlyswnhz4/video/upload/v1748978357/bg_light_q3ifwd.mp4"
-dark_video = "https://res.cloudinary.com/dlyswnhz4/video/upload/v1748978356/bg_dark_kffpsn.mp4"
-video_url = f"{dark_video if st.session_state.dark_mode else light_video}?v={st.session_state.token}"
-set_background(video_url)
-
-# === SIDEBAR ===
-render_sidebar()
-render_sidebar_chatbot()
-# === Load Data ===
-@st.cache_data
-def get_analysis_data():
-    loader = DataLoaderCleaner()
-    raw = loader.load_data("data/Airline_Delay_Cause.csv")
-    clean = loader.clean_data(raw)
-    fe = FeatureEngineering().transform(clean)
-    return raw, clean, fe
-
-raw_df, clean_df, fe_df = get_analysis_data()
-eda_fe = FlightDataAnalysis(fe_df)
-uni = UnivariateAnalyzer(fe_df)
-
-# === SECTION 1: UNIVARIATE ANALYSIS ===
-# === SECTION 1: UNIVARIATE ANALYSIS ===
-# === SECTION 1: UNIVARIATE ANALYSIS (Aligned Descriptions & Insights) ===
-with st.container():
-    st.subheader("Univariate Analysis")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
-            <b>Yearly Flight Arrivals</b><br>
-            Displays the total number of flight arrivals per year. This visualization helps identify long-term trends,
-            disruptions, and recovery patterns in air traffic volume over time.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
-            <b>Airline Share</b><br>
-            This pie chart presents the share of each airline carrier in the dataset.
-            To improve readability, only the top 10 carriers are shown individually; the remaining ones are grouped as “Other”.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(uni.plot_yearly_arrivals())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(uni.plot_pie("carrier"))
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85);
-        padding: 1rem; border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> The airline industry experienced strong growth from 2013–2019, followed by a sharp collapse in 2020 due to COVID-19. While 2021–2022 saw recovery in demand, the 2023 drop signals ongoing operational and economic volatility, emphasizing the need for resilient forecasting and agile capacity planning.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85);
-        padding: 1rem; border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Flight activity is highly concentrated among a few dominant carriers — with OO, DL, and MQ leading. This imbalance skews overall delay trends toward the operational behaviors of these major airlines. However, the 26% of flights grouped under “Other” highlight the need for granular, carrier-specific analysis when assessing delay risk or crafting optimization strategies.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Bottom spacing after full block
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-
-# === SECTION 2: TIME TRENDS (CLEAN & ALIGNED) ===
-with st.container():
-    st.subheader("Time Trends (Yearly)")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Delay Ratio Over Time</b><br>
-        This plot tracks the proportion of delayed flights (15+ mins) to total flights on a yearly basis. 
-        It highlights how operational performance changes over time, independent of traffic volume.
-        </div>""", unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Cancellation Rate Over Time</b><br>
-        This chart shows the yearly trend in cancellations as a percentage of total scheduled flights. 
-        It captures seasonal impacts, crisis periods, and airline-level operational challenges.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_delay_ratio_yearly())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_cancellation_rate_yearly())
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Delay ratios rebounded post-2020, surpassing pre-pandemic levels by 2023 — 
-        indicating that operational bottlenecks, staffing shortages, or demand surges may now outweigh past systemic controls. 
-        Even with fewer flights than 2019, punctuality has deteriorated — signaling deeper structural inefficiencies.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Excluding the 2020 crisis spike, cancellation rates have remained consistently low,
-        demonstrating strong airline control over schedule execution. This contrasts with rising delays,
-        suggesting airlines prioritize operating flights — even late — over canceling them.
-        </div>
-        """, unsafe_allow_html=True)
-
-# Row 4: Diversion Description (full-width)
-st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-st.markdown("""
-<div style="background: rgba(255,255,255,0.85); padding: 1rem;
-border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-<b>Diversion Rate Over Time</b><br>
-This lineplot represents the percentage of flights diverted from their intended destination each year. 
-It is a measure of airspace or airport instability and last-minute routing changes.
-</div>
-""", unsafe_allow_html=True)
-
-# Row 5: Diversion Plot (full-width)
-st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-st.pyplot(eda_fe.plot_diversion_rate_yearly())
-
-# Row 6: Diversion Insight (still full-width)
-st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-st.markdown("""
-<div style="background: rgba(255,255,255,0.85); padding: 1rem;
-border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-<i>Insight:</i> Diversions are infrequent but have risen post-pandemic, peaking in 2023. 
-This trend signals growing instability in airport or airspace operations — likely linked to increased weather volatility, 
-route congestion, or limited infrastructure flexibility during recovery. Continuous monitoring is essential, 
-as diversions carry high passenger disruption costs despite low frequency.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-# === SECTION 3: DELAY CAUSE ANALYSIS ===
-with st.container():
-    st.subheader("Delay Cause Analysis")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Average Delay % by Cause</b><br>
-        This plot shows the average percentage of total delay attributed to each delay category. 
-        It highlights which factors contribute most consistently across the dataset.
-        </div>""", unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Delay Causes (Peak Season)</b><br>
-        This pie chart illustrates the distribution of delay causes during peak traffic months. 
-        It captures how delay factors shift during the most operationally intense periods.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_avg_delay_pct_by_cause())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_delay_causes_proportion_peak())
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Carrier-related issues and late aircraft delays are the top contributors to total delay time,
-        together accounting for over 70%. These represent systemic and recurring inefficiencies within airline operations — such as tight schedules, crew/resource delays, or maintenance issues — and outweigh external causes like weather or air traffic control. Prioritizing internal process optimization can yield the highest impact on overall delay reduction.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> During peak traffic months, late aircraft delays surge to over 40%, becoming the dominant disruption source. Carrier delays remain high as well, highlighting operational strain during holidays and summer travel. This suggests that airlines face major scalability issues in high-demand periods, and should invest in buffer strategies, flexible scheduling, and turnaround optimization to reduce cascading delays.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Row 4: Full-width description for third chart
-    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <b>Dominant Delay Cause (per flight)</b><br>
-    This bar chart reveals the most common primary cause of delay at the flight level. 
-    Each flight is assigned its top contributing delay factor.
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Plot and Insight (full-width)
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.pyplot(eda_fe.plot_dominant_delay_causes_count())
-
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-    <i>Insight:</i> Most delayed flights are primarily caused by carrier-related and late aircraft delays — not external disruptions. This highlights deep-rooted internal inefficiencies like tight scheduling, crew availability, or inadequate turnaround buffers. These internal delays often create a ripple effect that propagates across the network, especially during high-frequency schedules. Tackling these leading causes offers the most direct path to performance improvement.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-
-
-# Note: Column col4 remains empty to keep layout balanced.
-# === SECTION 4: SEASONAL DELAY PATTERNS ===
-with st.container():
-    st.subheader("Seasonal Delay Patterns")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Average Delay per Flight by Season</b><br>
-        This bar chart displays the average delay time per flight for each season. 
-        It highlights how travel efficiency changes with seasonal patterns.
-        </div>""", unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Total Flights per Season</b><br>
-        This chart shows the total number of flights operated in each season. 
-        It provides context for comparing seasonal delay rates with traffic volume.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_avg_delay_per_flight_seasonal())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_flights_per_season())
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Summer shows the highest average delay per flight, reflecting the operational strain of peak demand and tighter schedules. Winter delays are also elevated, likely due to weather-related challenges. In contrast, fall emerges as the most efficient season — offering a key opportunity for performance benchmarking.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Summer leads in total flight volume, but winter’s lower traffic doesn’t guarantee fewer delays — suggesting that volume isn’t the sole disruption driver. Seasonal inefficiencies likely stem from a mix of demand surges and environmental factors, reinforcing the need for season-specific operational strategies.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Row 4: Additional seasonal insights
-    plot3, plot4 = st.columns(2)
-    with plot3:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_delay_causes_seasonal_distribution())
-
-    with plot4:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.plot_disruption_rate_by_season())
-
-    # Row 5: Final insights
-    insight3, insight4 = st.columns(2)
-    with insight3:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Summer brings a sharp rise in carrier and late aircraft delays, reflecting operational overload. Weather becomes the dominant disruptor in winter, while spring and summer see heavier NAS-related delays — suggesting seasonal congestion patterns in airspace and infrastructure.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight4:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Winter suffers the highest proportion of disrupted flights despite lower traffic, indicating reduced reliability due to weather and seasonal volatility. Fall stands out as the most stable season — an operational benchmark for reliability and planning.
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-
-# === SECTION 5: CARRIER BEHAVIOR ===
-with st.container():
-    st.subheader("Carrier Behavior")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Avg Delay Ratio per Carrier</b><br>
-        This chart ranks airlines based on the average proportion of delayed flights. 
-        It highlights overall reliability across the entire dataset.
-        </div>""", unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Carrier Delay Ratio by Season</b><br>
-        This seasonal breakdown compares how delay ratios shift for each airline throughout the year.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.avg_delay_ratio_per_carrier())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_ratio_across_seasons())
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Airlines like Envoy Air and JetBlue exhibit the highest average delay ratios across the dataset, suggesting persistent reliability issues. In contrast, Southwest and Delta maintain strong operational performance, indicating effective delay mitigation strategies and better schedule management.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Some airlines — such as JetBlue and Frontier — show sharp seasonal deterioration, especially in summer, pointing to scalability issues under pressure. Others, including Delta and Southwest, exhibit consistent year-round performance, indicating robust operational resilience.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Row 4: Additional descriptions
-    desc3, desc4 = st.columns(2)
-    with desc3:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Top 10 Carriers: Delay Cause Breakdown</b><br>
-        This chart decomposes total delay minutes for the top 10 airlines, categorized by delay type.
-        </div>""", unsafe_allow_html=True)
-
-    with desc4:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Delay Cause vs Disruption Rate</b><br>
-        This scatterplot shows how different delay causes contribute to higher disruption rates across carriers.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 5: Final plots
-    plot3, plot4 = st.columns(2)
-    with plot3:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_cause_breakdown_top3_carriers())
-
-    with plot4:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_cause_vs_disruption_correlation())
-
-    # Row 6: Final insights
-    insight3, insight4 = st.columns(2)
-    with insight3:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Most major airlines are primarily impacted by late aircraft and carrier-related delays, highlighting internal operational bottlenecks. However, some carriers also exhibit elevated NAS and weather-related delays, indicating varying levels of infrastructure exposure and airspace vulnerability.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight4:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Carrier and late aircraft delays are the strongest predictors of disruption at the airline level. Flights delayed for these reasons tend to result in broader network unreliability. By contrast, weather and security delays have less consistent correlation with high disruption — making internal airline processes the top target for reliability improvements.
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-# === SECTION 6: AIRPORT INSIGHTS ===
-with st.container():
-    st.subheader("Airport Insights")
-
-    # Row 1: Descriptions
-    desc1, desc2 = st.columns(2)
-    with desc1:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Avg Delay vs Delay Rate (Top Airports)</b><br>
-        Compares delay intensity and frequency among the 10 busiest airports. 
-        This highlights how different hubs handle traffic and disruptions.
-        </div>""", unsafe_allow_html=True)
-
-    with desc2:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Delay Ratio vs Flight Volume</b><br>
-        Visualizes the relationship between flight volume and average delay ratio across airports. 
-        Helps assess whether higher traffic leads to worse performance.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 2: Plots
-    plot1, plot2 = st.columns(2)
-    with plot1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.top_airports_delay_metrics())
-
-    with plot2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_ratio_vs_flight_volume())
-
-    # Row 3: Insights
-    insight1, insight2 = st.columns(2)
-    with insight1:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> Some major hubs — such as Chicago and San Francisco — consistently experience both longer and more frequent delays, suggesting structural or environmental constraints. Others, like Atlanta and Dallas, handle comparable traffic with lower disruption levels — making them operational benchmarks worth studying.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with insight2:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-        <i>Insight:</i> High traffic volume does not necessarily lead to worse delay performance. Many large airports operate with low delay ratios, indicating that efficiency is driven more by management practices, layout, and resource allocation than by raw traffic volume alone.
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Heatmap (full width)
-    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <b>Top Airports: Delay Cause Breakdown</b><br>
-    Heatmap displaying the total number of delays by cause for the top 20 busiest airports. 
-    Enables pinpointing operational weaknesses across major hubs.
-    </div>""", unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.pyplot(eda_fe.airport_delay_cause_heatmap())
-
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-    <i>Insight:</i> This heatmap reveals clear delay type dominance across major U.S. airports, exposing location-specific vulnerabilities. For example, NAS delays plague Chicago and Newark, while carrier and late aircraft delays are the main bottlenecks at Atlanta and Dallas. These patterns enable targeted operational interventions — such as airspace coordination at ORD and turnaround efficiency improvements at ATL.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-
-# === SECTION 7: RISK LEVELS ===
-with st.container():
-    st.subheader("Risk Level Distribution")
-
-    # Description
-    st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <b>Distribution of Delay Risk Levels</b><br>
-    Breaks down the share of flights into low, medium, and high delay risk. 
-    These levels help gauge how widespread and severe delay threats are across the dataset.
-    </div>""", unsafe_allow_html=True)
-
-    # Plot
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.pyplot(eda_fe.plot_delay_risk_level_distribution())
-
-    # Insight
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); padding: 1rem;
-    border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">
-    <i>Insight:</i> While most flights are low risk, nearly 40% fall into medium to high delay risk categories — signaling a non-negligible vulnerability across the network. These insights are valuable for proactive planning, such as prioritizing resource allocation, adjusting buffer times, and targeting high-risk routes or carriers for operational reviews.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-
-
-# === FOOTER (Unified with other pages) ===
-st.markdown("""
-<hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
-<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem; font-family: 'Roboto', sans-serif;'>
-Data Analysis Page — Part of the Flight Delay Dashboard by <b>Omar Yasser</b>
-</div>
-""", unsafe_allow_html=True)
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+class UnivariateAnalyzer:
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.copy()
+
+    # 📊 Histogram for continuous features
+    def plot_yearly_arrivals(self):
+        df = self.df.copy()
+        df['year'] = pd.to_datetime(df['year_month']).dt.year
+        df_grouped = df.groupby('year')['arr_flights'].sum().reset_index()
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.lineplot(data=df_grouped, x='year', y='arr_flights', marker="o", ax=ax)
+        ax.set_title("Yearly Flight Arrivals")
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Total Flights")
+        ax.grid(True, linestyle="--", alpha=0.5)
+        fig.tight_layout()
+        return fig
+
+
+
+
+    # 📦 Boxplot for numeric outlier detection
+    def plot_boxplot(self, col: str):
+        fig, ax = plt.subplots(figsize=(4, 4))
+        sns.boxplot(y=self.df[col], ax=ax, color='coral')
+        ax.set_title(f"Boxplot of {col}")
+        fig.tight_layout()
+        return fig
+
+    # 📊 Countplot for categorical values
+    def plot_bar_count(self, col: str, top_n: int = None):
+        counts = self.df[col].value_counts()
+        if top_n:
+            counts = counts.head(top_n)
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(x=counts.index, y=counts.values, ax=ax, palette="pastel")
+        ax.set_title(f"Frequency of {col}")
+        ax.set_xlabel(col)
+        ax.set_ylabel("Count")
+        ax.bar_label(ax.containers[0])
+        plt.xticks(rotation=45)
+        fig.tight_layout()
+        return fig
+
+    # 🥧 Pie chart for proportions
+    def plot_pie(self, col: str, top_n: int = 10):
+        counts = self.df[col].value_counts()
+        top_counts = counts.head(top_n)
+        other_total = counts[top_n:].sum()
+
+        combined = top_counts.copy()
+        combined["Other"] = other_total
+
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.pie(combined.values, labels=combined.index, autopct='%1.1f%%', startangle=90)
+        ax.set_title(f"Proportion of {col}")
+        ax.axis('equal')
+        return fig
+
+
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+class FlightDataAnalysis:
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.copy()
+        self.delay_cols = ['carrier_delay', 'weather_delay', 'nas_delay', 'security_delay', 'late_aircraft_delay']
+
+    def summary_statistics(self):
+        return self.df.describe()
+
+    def missing_values_report(self):
+        missing = self.df.isnull().sum()
+        percent = 100 * missing / len(self.df)
+        return pd.DataFrame({'missing_count': missing, 'missing_percent': percent}).query('missing_count > 0')
+
+    def correlation_matrix(self):
+        corr = self.df.select_dtypes(include='number').corr()
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(corr, annot=True, cmap='coolwarm', center=0, fmt=".2f", ax=ax)
+        ax.set_title('Correlation Matrix Heatmap')
+        return fig
+
+    # 2. Time Trends
+    def plot_flights_vs_delays_yearly(self):
+        df = self.df.copy()
+        df['year'] = pd.to_datetime(df['year_month']).dt.year
+        yearly = df.groupby('year')[['arr_flights', 'arr_del15']].sum().reset_index()
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+        yearly.plot(x='year', y=['arr_flights', 'arr_del15'], ax=ax, marker='o')
+        ax.set_title("Yearly Trends: Total Flights vs Delayed Flights (15+ mins)")
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Flights")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_delay_ratio_yearly(self):
+        df = self.df.copy()
+        df['year'] = pd.to_datetime(df['year_month']).dt.year
+        df_grouped = df.groupby('year').agg({
+            'arr_del15': 'sum',
+            'arr_flights': 'sum'
+        }).reset_index()
+        df_grouped['delay_ratio'] = df_grouped['arr_del15'] / df_grouped['arr_flights']
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+        sns.lineplot(data=df_grouped, x='year', y='delay_ratio', marker="o", ax=ax)
+        ax.set_title("Yearly Delay Ratio")
+        ax.set_ylabel("Delay Ratio")
+        ax.set_xlabel("Year")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_cancellation_rate_yearly(self):
+        df = self.df.copy()
+        df['year'] = pd.to_datetime(df['year_month']).dt.year
+        yearly = df.groupby('year')[['arr_cancelled', 'arr_flights']].sum().reset_index()
+        yearly['cancellation_rate'] = yearly['arr_cancelled'] / yearly['arr_flights']
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+        sns.lineplot(data=yearly, x='year', y='cancellation_rate', marker="o", ax=ax)
+        ax.set_title("Yearly Cancellation Rate")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_diversion_rate_yearly(self):
+        df = self.df.copy()
+        df['year'] = pd.to_datetime(df['year_month']).dt.year
+        yearly = df.groupby('year')[['arr_diverted', 'arr_flights']].sum().reset_index()
+        yearly['diversion_rate'] = yearly['arr_diverted'] / yearly['arr_flights']
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+        sns.lineplot(data=yearly, x='year', y='diversion_rate', marker="o", ax=ax)
+        ax.set_title("Yearly Diversion Rate")
+        fig.tight_layout()
+        return fig
+
+
+    # 3. Delay Cause Breakdown
+    def plot_delay_causes_proportion_peak(self):
+        peak = self.df[self.df['month'].isin([6, 7, 8, 12])]
+        cause_sum = peak[self.delay_cols].sum().sort_values(ascending=True)
+
+        fig, ax = plt.subplots(figsize=(7, 6))
+
+        # Improved pie chart with better spacing and label visibility
+        wedges, texts, autotexts = ax.pie(
+            cause_sum.values,
+            labels=cause_sum.index.str.replace('_', ' ').str.title(),  # optional prettier labels
+            autopct='%1.1f%%',
+            startangle=90,
+            textprops={'fontsize': 9, 'color': 'black'},
+            pctdistance=0.8,
+            labeldistance=1.1
+        )
+
+        # Make sure everything is readable and styled
+        for text in texts:
+            text.set_fontsize(9)
+        for autotext in autotexts:
+            autotext.set_color('black')
+            autotext.set_fontsize(8)
+
+        ax.set_title("Delay Causes Proportion (Peak Months)", fontsize=12)
+        ax.axis("equal")  # Perfect circle
+        fig.tight_layout()
+        return fig
+
+
+
+    def plot_avg_delay_pct_by_cause(self):
+        # Calculate and sort average delay percentages by cause
+        avg_pct = self.df[[f"{col}_pct" for col in self.delay_cols]].mean()
+        avg_pct = avg_pct.sort_values(ascending=True)
+
+        # Plot sorted values
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(x=avg_pct.index, y=avg_pct.values, ax=ax, palette="muted")
+
+        ax.set_title("Average Delay Percentage by Cause")
+        ax.set_ylabel("Average % of Total Delay")
+        ax.set_xlabel("Delay Cause")
+        plt.xticks(rotation=45)
+        fig.tight_layout()
+        return fig
+
+
+    def plot_dominant_delay_causes_count(self):
+        count = self.df['dominant_delay_cause'].value_counts().sort_values().reset_index()
+        count.columns = ['Cause', 'Count']
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(data=count, x='Cause', y='Count', ax=ax, palette="pastel")
+        ax.set_title("Dominant Delay Cause per Flight")
+        ax.bar_label(ax.containers[0])
+        plt.xticks(rotation=45)
+        fig.tight_layout()
+        return fig
+
+    # 4. Seasonal Patterns
+    def plot_avg_delay_per_flight_seasonal(self):
+        df = self.df.groupby('season')['mean_delay_per_flight'].mean().reset_index()
+        df = df.sort_values(by='mean_delay_per_flight')  # ✅ sort ascending
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(data=df, x='season', y='mean_delay_per_flight', ax=ax, palette='coolwarm')
+        ax.set_title("Average Delay per Flight by Season")
+        ax.set_ylabel("Avg Delay (mins)")
+        ax.set_xlabel("Season")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_flights_per_season(self):
+        df = self.df.groupby('season')['arr_flights'].sum().reset_index()
+        df = df.sort_values(by='arr_flights')  # ✅ sort ascending
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(data=df, x='season', y='arr_flights', ax=ax, palette='viridis')
+        ax.set_title("Total Flights per Season")
+        ax.set_ylabel("Total Flights")
+        ax.set_xlabel("Season")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_delay_causes_seasonal_distribution(self):
+        df = self.df.groupby('season')[self.delay_cols].sum().reset_index()
+        df['total'] = df[self.delay_cols].sum(axis=1)
+        df = df.sort_values(by='total')  # ✅ sort seasons by total delay
+
+        melted = df.drop(columns='total').melt(id_vars='season', var_name='Cause', value_name='Total Delay')
+
+        fig, ax = plt.subplots(figsize=(9, 5))
+        sns.barplot(data=melted, x='season', y='Total Delay', hue='Cause', ax=ax)
+        ax.set_title("Delay Cause Distribution by Season")
+        ax.set_ylabel("Total Delay Minutes")
+        fig.tight_layout()
+        return fig
+
+
+    def plot_disruption_rate_by_season(self):
+        df = self.df.groupby('season')['disrupted'].mean().reset_index()
+        df = df.sort_values(by='disrupted')  # ✅ sort ascending
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(data=df, x='season', y='disrupted', ax=ax, palette='mako')
+        ax.set_title("Disruption Rate by Season")
+        ax.set_ylabel("Disruption Rate")
+        ax.set_xlabel("Season")
+        fig.tight_layout()
+        return fig
+
+
+    # 5. Carrier Behavior
+    
+    def avg_delay_ratio_per_carrier(self):
+        #  Group and sort ascending by delay ratio
+        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
+        df = df.sort_values(by='delay_ratio', ascending=True)
+
+        fig, ax = plt.subplots(figsize=(12, 5))
+        sns.barplot(data=df, x='carrier_name', y='delay_ratio', ax=ax)
+
+        ax.set_title("Average Delay Ratio per Carrier")
+        ax.set_ylabel("Delay Ratio")
+        ax.set_xlabel("Carrier")
+        ax.tick_params(axis='x', labelrotation=45, labelsize=8)
+        fig.tight_layout()
+        return fig
+
+
+    def delay_ratio_across_seasons(self):
+    # ✅ Get Top 3 carriers by total flight volume
+        top_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
+        df = self.df[self.df['carrier_name'].isin(top_carriers)]
+        df = df.groupby(['carrier_name', 'season'])['delay_ratio'].mean().reset_index()
+        # Optional: Sort seasons by total delay ratio (optional but helps with visual order)
+        season_order = (
+            df.groupby('season')['delay_ratio']
+            .mean()
+            .sort_values()
+            .index.tolist()
+        )
+        fig, ax = plt.subplots(figsize=(10, 5))
+        sns.barplot(
+            data=df,
+            x='season',
+            y='delay_ratio',
+            hue='carrier_name',
+            ax=ax,
+            order=season_order  # ✅ enforce season sorting
+        )
+        ax.set_title("Carrier Delay Ratio Across Seasons (Top 3 Airlines)")
+        ax.set_ylabel("Average Delay Ratio")
+        ax.set_xlabel("Season")
+        ax.legend(title='Carrier', fontsize=7, title_fontsize=8, loc='upper right', bbox_to_anchor=(1.3, 1))
+        fig.tight_layout()
+        return fig
+
+
+    def delay_cause_breakdown_top10_carriers(self):
+        #  Get top 3 carriers by flight volume
+        top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
+
+        #  Filter only top 3 data
+        df = self.df[self.df['carrier_name'].isin(top_3)].copy()
+
+        #  Group and sum delay causes
+        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
+
+        #  Sort by total delay and keep only top 3 cleanly
+        delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
+        delay_sum = delay_sum.sort_values(by='total', ascending=True)
+
+        #  Melt the data for plotting
+        melted = delay_sum.drop(columns='total').melt(
+            id_vars='carrier_name',
+            var_name='Cause',
+            value_name='Total Delay'
+        )
+        #   Plot — now only top 3 carriers visible
+        fig, ax = plt.subplots(figsize=(10, 5))
+        sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
+
+        ax.set_title("Top 3 Carriers: Delay Cause Breakdown")
+        ax.set_ylabel("Total Delay Minutes")
+        ax.set_xlabel("Carrier")
+        ax.tick_params(axis='x', labelrotation=45, labelsize=8)
+        ax.legend(title='Cause', fontsize=7, title_fontsize=8)
+        fig.tight_layout()
+        return fig
+
+
+
+    def delay_cause_vs_disruption_correlation(self):
+        summary = self.df.groupby('carrier_name').agg({
+            'disrupted': 'mean', **{col: 'sum' for col in self.delay_cols}
+        }).reset_index()
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+        for col in self.delay_cols:
+            sns.scatterplot(x=summary[col], y=summary['disrupted'], ax=ax, label=col.replace('_', ' ').title(), s=60)
+        ax.set_title("Disruption Rate vs Delay Cause (Carrier Level)")
+        ax.set_xlabel("Total Delay Minutes")
+        ax.set_ylabel("Disruption Rate")
+        ax.legend(title='Delay Cause', fontsize=7, title_fontsize=8, bbox_to_anchor=(1.05, 1), loc='upper left')
+        fig.tight_layout()
+        return fig
+
+
+    # 6. Airport Insights
+    def top_airports_delay_metrics(self):
+        # Top 10 airports by total flights
+        top = self.df.groupby('airport_name')['arr_flights'].sum().nlargest(10).index
+        df_top = self.df[self.df['airport_name'].isin(top)].copy()
+        df_top['airport_short'] = df_top['airport_name'].str[:10]
+
+        # Avg delay per flight
+        avg_delay = df_top.groupby('airport_short')['mean_delay_per_flight'].mean().reset_index()
+
+        # Avg airport delay rate
+        self.df['airport_delay_rate'] = pd.to_numeric(self.df['airport_delay_rate'], errors='coerce')
+        delay_rate = self.df.groupby('airport_name')['airport_delay_rate'].mean().reset_index()
+        delay_rate = delay_rate[delay_rate['airport_name'].isin(top)].copy()
+        delay_rate['airport_short'] = delay_rate['airport_name'].str[:10]
+
+        # Merge and sort by average delay
+        merged = pd.merge(avg_delay, delay_rate[['airport_short', 'airport_delay_rate']], on='airport_short')
+        merged = merged.sort_values(by='mean_delay_per_flight')  # ✅ sort by delay for intuitive visual
+
+        # Melt for bar plot
+        melted = merged.melt(id_vars='airport_short', var_name='Metric', value_name='Value')
+
+        fig, ax = plt.subplots(figsize=(9, 5))
+        sns.barplot(data=melted, x='airport_short', y='Value', hue='Metric', ax=ax)
+        ax.set_title("Top Airports: Avg Delay vs Delay Rate")
+        ax.set_ylabel("Metric Value")
+        ax.set_xlabel("Airport (Short Code)")
+        fig.tight_layout()
+        return fig
+
+
+    def delay_ratio_vs_flight_volume(self):
+        df = self.df.copy()
+
+        # Aggregate and sort by flight volume
+        agg_df = df.groupby('airport_name').agg({
+            'arr_flights': 'sum',
+            'delay_ratio': 'mean'
+        }).reset_index().sort_values(by='arr_flights')  # ✅ sorted left to right
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.scatterplot(
+            data=agg_df,
+            x='arr_flights',
+            y='delay_ratio',
+            alpha=0.6,
+            s=60,
+            ax=ax,
+            color='steelblue'
+        )
+
+        ax.set_title("Airport-Level: Delay Ratio vs Flight Volume", fontsize=12)
+        ax.set_xlabel("Total Flight Volume", fontsize=10)
+        ax.set_ylabel("Average Delay Ratio", fontsize=10)
+        ax.grid(True, linestyle='--', alpha=0.4)
+        fig.tight_layout()
+        return fig
+
+
+
+
+
+    def airport_delay_cause_heatmap(self):
+        df = self.df.copy()
+
+        delay_cols = ['carrier_ct', 'weather_ct', 'nas_ct', 'security_ct', 'late_aircraft_ct']
+
+        # Aggregate delays
+        delay_sum = df.groupby('airport_name')[delay_cols].sum()
+
+        # Focus on top 20 busiest airports
+        top_airports = df.groupby('airport_name')['arr_flights'].sum().nlargest(20).index
+        delay_sum = delay_sum.loc[top_airports]
+
+        # Normalize column names
+        delay_sum.columns = [col.replace('_ct', '').replace('_', ' ').title() for col in delay_sum.columns]
+
+        fig, ax = plt.subplots(figsize=(12, 7))
+        sns.heatmap(
+            delay_sum,
+            cmap="YlOrRd",
+            linewidths=0.3,
+            linecolor='white',
+            annot=True,
+            fmt=".0f",
+            cbar_kws={'label': 'Total Delay Count'}
+        )
+
+        ax.set_title("Top 20 Airports: Delay Cause Breakdown", fontsize=13)
+        ax.set_xlabel("Delay Cause")
+        ax.set_ylabel("Airport")
+        ax.tick_params(axis='y', labelsize=8)
+        fig.tight_layout()
+        return fig
+
+
+
+
+    # 7. Risk Insights
+    def plot_delay_risk_level_distribution(self):
+        # Count and normalize risk levels, then sort ascending
+        df = self.df['delay_risk_level'].value_counts(normalize=True).sort_values().reset_index()
+        df.columns = ['Risk Level', 'Proportion']
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        sns.barplot(data=df, x='Risk Level', y='Proportion', ax=ax, palette='Set2')
+
+        ax.set_title("Distribution of Delay Risk Levels")
+        ax.set_ylabel("Proportion of Flights")
+        ax.set_xlabel("Risk Level")
+        fig.tight_layout()
+        return fig
+
