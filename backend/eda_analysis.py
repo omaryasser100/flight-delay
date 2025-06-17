@@ -156,35 +156,41 @@ class FlightDataAnalysis:
 
     # 3. Delay Cause Breakdown
     def plot_delay_causes_proportion_peak(self):
+        import matplotlib.patches as mpatches
+
         peak = self.df[self.df['month'].isin([6, 7, 8, 12])]
         cause_sum = peak[self.delay_cols].sum().sort_values(ascending=True)
 
         fig, ax = plt.subplots(figsize=(7, 6))
 
-        # Improved pie chart with better spacing and label visibility
+        # Use custom colors for clarity (optional)
+        colors = sns.color_palette("pastel", len(cause_sum))
+
+        # Plot pie with only percentages shown inside
         wedges, texts, autotexts = ax.pie(
             cause_sum.values,
-            labels=cause_sum.index.str.replace('_', ' ').str.title(),  # optional prettier labels
             autopct='%1.1f%%',
             startangle=90,
             textprops={'fontsize': 9, 'color': 'black'},
-            pctdistance=0.8,
-            labeldistance=1.1
+            colors=colors,
+            pctdistance=0.75
         )
 
-        # Make sure everything is readable and styled
-        for text in texts:
-            text.set_fontsize(9)
-        for autotext in autotexts:
-            autotext.set_color('black')
-            autotext.set_fontsize(8)
+        # External legend
+        labels = [label.replace("_", " ").title() for label in cause_sum.index]
+        handles = [mpatches.Patch(color=colors[i], label=labels[i]) for i in range(len(labels))]
+        ax.legend(
+            handles=handles,
+            loc='center left',
+            bbox_to_anchor=(1, 0.5),
+            fontsize=9,
+            title="Delay Cause"
+        )
 
         ax.set_title("Delay Causes Proportion (Peak Months)", fontsize=12)
-        ax.axis("equal")  # Perfect circle
+        ax.axis("equal")
         fig.tight_layout()
         return fig
-
-
 
     def plot_avg_delay_pct_by_cause(self):
         # Calculate and sort average delay percentages by cause
@@ -288,65 +294,87 @@ class FlightDataAnalysis:
 
 
     def delay_ratio_across_seasons(self):
-    # ✅ Get Top 3 carriers by total flight volume
+        # Top 3 carriers by flight volume
         top_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
-        df = self.df[self.df['carrier_name'].isin(top_carriers)]
-        df = df.groupby(['carrier_name', 'season'])['delay_ratio'].mean().reset_index()
-        # Optional: Sort seasons by total delay ratio (optional but helps with visual order)
-        season_order = (
-            df.groupby('season')['delay_ratio']
-            .mean()
-            .sort_values()
-            .index.tolist()
-        )
-        fig, ax = plt.subplots(figsize=(10, 5))
+        df = self.df[self.df['carrier_name'].isin(top_carriers)].copy()
+
+        # Group and sort
+        df = df.groupby(['season', 'carrier_name'])['delay_ratio'].mean().reset_index()
+
+        # Sort seasons by total delay ratio
+        season_order = df.groupby('season')['delay_ratio'].mean().sort_values().index.tolist()
+
+        fig, ax = plt.subplots(figsize=(9, 5))  # slightly smaller but tighter
+
         sns.barplot(
             data=df,
             x='season',
             y='delay_ratio',
             hue='carrier_name',
             ax=ax,
-            order=season_order  # ✅ enforce season sorting
+            order=season_order,
+            palette="Set2"
         )
-        ax.set_title("Carrier Delay Ratio Across Seasons (Top 3 Airlines)")
-        ax.set_ylabel("Average Delay Ratio")
-        ax.set_xlabel("Season")
-        ax.legend(title='Carrier', fontsize=7, title_fontsize=8, loc='upper right', bbox_to_anchor=(1.3, 1))
+
+        ax.set_title("Carrier Delay Ratio Across Seasons (Top 3 Airlines)", fontsize=12)
+        ax.set_ylabel("Average Delay Ratio", fontsize=10)
+        ax.set_xlabel("Season", fontsize=10)
+
+        # ✅ Improve ticks and grid
+        ax.tick_params(axis='x', labelsize=9)
+        ax.tick_params(axis='y', labelsize=9)
+        ax.grid(True, axis='y', linestyle='--', alpha=0.3)
+
+        # ✅ Clean Legend: shows only top 3, larger size, placed outside if space allows
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(
+            handles=handles,
+            labels=labels,
+            title="Carrier",
+            title_fontsize=9,
+            fontsize=9,
+            loc='upper right',
+            bbox_to_anchor=(1.2, 1)
+        )
+
         fig.tight_layout()
         return fig
 
 
-    def delay_cause_breakdown_top10_carriers(self):
-        #  Get top 3 carriers by flight volume
+
+    def delay_cause_breakdown_top3_carriers(self):
+        # ✅ Step 1: Top 3 carriers by total flights
         top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
 
-        #  Filter only top 3 data
+        # ✅ Step 2: Filter dataset
         df = self.df[self.df['carrier_name'].isin(top_3)].copy()
 
-        #  Group and sum delay causes
+        # ✅ Step 3: Sum delay causes by carrier
         delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
 
-        #  Sort by total delay and keep only top 3 cleanly
+        # ✅ Step 4: Sort by total delay ascending
         delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
-        delay_sum = delay_sum.sort_values(by='total', ascending=True)
+        delay_sum = delay_sum.sort_values(by='total', ascending=True).drop(columns='total')
 
-        #  Melt the data for plotting
-        melted = delay_sum.drop(columns='total').melt(
-            id_vars='carrier_name',
-            var_name='Cause',
-            value_name='Total Delay'
-        )
-        #   Plot — now only top 3 carriers visible
-        fig, ax = plt.subplots(figsize=(10, 5))
+        # ✅ Step 5: Melt for seaborn barplot
+        melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
+
+        # ✅ Step 6: Plot
+        fig, ax = plt.subplots(figsize=(10, 5))  # Bigger bars by wider plot
+
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
 
-        ax.set_title("Top 3 Carriers: Delay Cause Breakdown")
-        ax.set_ylabel("Total Delay Minutes")
-        ax.set_xlabel("Carrier")
-        ax.tick_params(axis='x', labelrotation=45, labelsize=8)
-        ax.legend(title='Cause', fontsize=7, title_fontsize=8)
+        ax.set_title("Top 3 Carriers: Delay Cause Breakdown", fontsize=12)
+        ax.set_ylabel("Total Delay Minutes", fontsize=10)
+        ax.set_xlabel("Carrier", fontsize=10)
+        ax.tick_params(axis='x', labelrotation=45, labelsize=9)
+        ax.tick_params(axis='y', labelsize=9)
+        ax.grid(axis='y', linestyle='--', alpha=0.3)
+
+        ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
         fig.tight_layout()
         return fig
+
 
 
 
