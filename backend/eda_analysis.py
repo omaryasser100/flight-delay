@@ -157,16 +157,33 @@ class FlightDataAnalysis:
     # 3. Delay Cause Breakdown
     def plot_delay_causes_proportion_peak(self):
         peak = self.df[self.df['month'].isin([6, 7, 8, 12])]
-        cause_sum = peak[self.delay_cols].sum()
-        
-        # ✅ Sort values ascending before plotting
-        cause_sum = cause_sum.sort_values(ascending=True)
-        
-        fig, ax = plt.subplots(figsize=(6, 6))
-        ax.pie(cause_sum.values, labels=cause_sum.index, autopct='%1.1f%%', startangle=90)
-        ax.set_title("Delay Causes Proportion (Peak Months)")
-        ax.axis("equal")
+        cause_sum = peak[self.delay_cols].sum().sort_values(ascending=True)
+
+        fig, ax = plt.subplots(figsize=(7, 6))
+
+        # Improved pie chart with better spacing and label visibility
+        wedges, texts, autotexts = ax.pie(
+            cause_sum.values,
+            labels=cause_sum.index.str.replace('_', ' ').str.title(),  # optional prettier labels
+            autopct='%1.1f%%',
+            startangle=90,
+            textprops={'fontsize': 9, 'color': 'black'},
+            pctdistance=0.8,
+            labeldistance=1.1
+        )
+
+        # Make sure everything is readable and styled
+        for text in texts:
+            text.set_fontsize(9)
+        for autotext in autotexts:
+            autotext.set_color('black')
+            autotext.set_fontsize(8)
+
+        ax.set_title("Delay Causes Proportion (Peak Months)", fontsize=12)
+        ax.axis("equal")  # Perfect circle
+        fig.tight_layout()
         return fig
+
 
 
     def plot_avg_delay_pct_by_cause(self):
@@ -255,15 +272,20 @@ class FlightDataAnalysis:
     # 5. Carrier Behavior
     
     def avg_delay_ratio_per_carrier(self):
-        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index().sort_values(by='delay_ratio')
+        #  Group and sort ascending by delay ratio
+        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
+        df = df.sort_values(by='delay_ratio', ascending=True)
+
         fig, ax = plt.subplots(figsize=(12, 5))
-        sns.barplot(data=df.sort_values('delay_ratio', ascending=False), x='carrier_name', y='delay_ratio', ax=ax)
+        sns.barplot(data=df, x='carrier_name', y='delay_ratio', ax=ax)
+
         ax.set_title("Average Delay Ratio per Carrier")
         ax.set_ylabel("Delay Ratio")
         ax.set_xlabel("Carrier")
         ax.tick_params(axis='x', labelrotation=45, labelsize=8)
         fig.tight_layout()
         return fig
+
 
     def delay_ratio_across_seasons(self):
     # ✅ Get Top 3 carriers by total flight volume
@@ -294,24 +316,30 @@ class FlightDataAnalysis:
         return fig
 
 
-    def delay_cause_breakdown_top3_carriers(self):
-        #  Top 3 carriers by flight volume
-        top = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
-        df = self.df[self.df['carrier_name'].isin(top)]
+    def delay_cause_breakdown_top10_carriers(self):
+        #  Get top 3 carriers by flight volume
+        top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
 
-        #  Sum delay causes
+        #  Filter only top 3 data
+        df = self.df[self.df['carrier_name'].isin(top_3)].copy()
+
+        #  Group and sum delay causes
         delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
 
-        #  Calculate total delay per carrier and sort
+        #  Sort by total delay and keep only top 3 cleanly
         delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
-        delay_sum = delay_sum.sort_values(by='total')  # ✅ sort by total delay ascending
+        delay_sum = delay_sum.sort_values(by='total', ascending=True)
+
+        #  Melt the data for plotting
         melted = delay_sum.drop(columns='total').melt(
             id_vars='carrier_name',
             var_name='Cause',
             value_name='Total Delay'
         )
+        #   Plot — now only top 3 carriers visible
         fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
+
         ax.set_title("Top 3 Carriers: Delay Cause Breakdown")
         ax.set_ylabel("Total Delay Minutes")
         ax.set_xlabel("Carrier")
@@ -319,6 +347,7 @@ class FlightDataAnalysis:
         ax.legend(title='Cause', fontsize=7, title_fontsize=8)
         fig.tight_layout()
         return fig
+
 
 
     def delay_cause_vs_disruption_correlation(self):
