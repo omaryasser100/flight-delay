@@ -165,7 +165,7 @@ class FlightDataAnalysis:
         return fig
 
     def plot_avg_delay_pct_by_cause(self):
-        avg_pct = self.df[[f"{col}_pct" for col in self.delay_cols]].mean()
+        avg_pct = self.df[[f"{col}_pct" for col in self.delay_cols]].mean().sort_values()
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(x=avg_pct.index, y=avg_pct.values, ax=ax, palette="muted")
         ax.set_title("Average Delay Percentage by Cause")
@@ -174,7 +174,7 @@ class FlightDataAnalysis:
         return fig
 
     def plot_dominant_delay_causes_count(self):
-        count = self.df['dominant_delay_cause'].value_counts().reset_index()
+        count = self.df['dominant_delay_cause'].value_counts().sort_values().reset_index()
         count.columns = ['Cause', 'Count']
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=count, x='Cause', y='Count', ax=ax, palette="pastel")
@@ -186,7 +186,7 @@ class FlightDataAnalysis:
 
     # 4. Seasonal Patterns
     def plot_avg_delay_per_flight_seasonal(self):
-        df = self.df.groupby('season')['mean_delay_per_flight'].mean().reset_index()
+        df = self.df.groupby('season')['mean_delay_per_flight'].mean().reset_index().sort_values(by='mean_delay_per_flight')
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='mean_delay_per_flight', ax=ax, palette='coolwarm')
         ax.set_title("Average Delay per Flight by Season")
@@ -194,7 +194,7 @@ class FlightDataAnalysis:
         return fig
 
     def plot_flights_per_season(self):
-        df = self.df.groupby('season')['arr_flights'].sum().reset_index()
+        df = self.df.groupby('season')['arr_flights'].sum().reset_index().sort_values(by='arr_flights')
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='arr_flights', ax=ax, palette='viridis')
         ax.set_title("Total Flights per Season")
@@ -211,7 +211,7 @@ class FlightDataAnalysis:
         return fig
 
     def plot_disruption_rate_by_season(self):
-        df = self.df.groupby('season')['disrupted'].mean().reset_index()
+        df = self.df.groupby('season')['disrupted'].mean().reset_index().sort_values(by='disrupted')
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='disrupted', ax=ax, palette='mako')
         ax.set_title("Disruption Rate by Season")
@@ -221,7 +221,7 @@ class FlightDataAnalysis:
     # 5. Carrier Behavior
     # 5. Carrier Behavior
     def avg_delay_ratio_per_carrier(self):
-        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
+        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index().sort_values(by='delay_ratio')
         fig, ax = plt.subplots(figsize=(12, 5))
         sns.barplot(data=df.sort_values('delay_ratio', ascending=False), x='carrier_name', y='delay_ratio', ax=ax)
         ax.set_title("Average Delay Ratio per Carrier")
@@ -249,7 +249,7 @@ class FlightDataAnalysis:
     def delay_cause_breakdown_top10_carriers(self):
         top = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(10).index
         df = self.df[self.df['carrier_name'].isin(top)]
-        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
+        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index().sort_values(by=self.delay_cols, ascending=True)
         melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
 
         fig, ax = plt.subplots(figsize=(12, 5))
@@ -362,9 +362,10 @@ class FlightDataAnalysis:
 
 
 
+
     # 7. Risk Insights
     def plot_delay_risk_level_distribution(self):
-        df = self.df['delay_risk_level'].value_counts(normalize=True).reset_index()
+        df = self.df['delay_risk_level'].value_counts(normalize=True).sort_values().reset_index()
         df.columns = ['Risk Level', 'Proportion']
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='Risk Level', y='Proportion', ax=ax, palette='Set2')
