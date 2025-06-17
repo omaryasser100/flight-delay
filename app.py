@@ -23,18 +23,7 @@ st.set_page_config(
 )
 
 # ===================== 🌐 LOAD GLOBAL FONTS =====================
-st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        html, body, [class*="css"] {
-            font-family: 'Roboto', sans-serif;
-        }
-        .welcome-text {
-            font-size: 1.4rem;
-            font-weight: 500;
-        }
-    </style>
-""", unsafe_allow_html=True)
+
 
 # ===================== 🧠 INIT SESSION STATE =====================
 query_params = st.query_params
@@ -92,7 +81,7 @@ st.markdown(
         line-height: 1.6;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         margin-top: 1rem;
-        font-family: 'Roboto', sans-serif;
+        
     ">
     <b>Project Summary:</b><br>
     This interactive dashboard provides a comprehensive analysis of monthly flight performance across U.S. airports and airlines.
@@ -178,7 +167,7 @@ def render_kpi(title, value, color="#0066cc"):
         border-radius: 10px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.15);
         border-left: 5px solid {color};
-        font-family: 'Roboto', sans-serif;
+        
     ">
         <div style="font-size: 15px; color: #333;">{title}</div>
         <div style="font-size: 24px; font-weight: 700; color: #111;">{value}</div>
@@ -213,7 +202,7 @@ st.pyplot(eda.correlation_matrix())
 # ===================== ⚓ FOOTER (REUSABLE) =====================
 st.markdown(
     '''
-    <hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
+    <hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;; color: #000;">
     <div style='text-align: center; padding: 1rem 0; color: #000; font-size: 0.9rem; font-family: Roboto, sans-serif;'>
     Built with by <b>Omar Yasser</b> — Flight Delay Dashboard v1.0
     </div>
