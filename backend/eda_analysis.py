@@ -362,7 +362,6 @@ class FlightDataAnalysis:
 
 
 
-
     # 7. Risk Insights
     def plot_delay_risk_level_distribution(self):
         df = self.df['delay_risk_level'].value_counts(normalize=True).reset_index()
