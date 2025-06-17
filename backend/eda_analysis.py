@@ -359,9 +359,15 @@ class FlightDataAnalysis:
         # ✅ Step 5: Melt for seaborn barplot
         melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
 
-        # ✅ Step 6: Plot
-        fig, ax = plt.subplots(figsize=(10, 5))  # Bigger bars by wider plot
+        # ✅ Force Seaborn to only use the sorted top 3
+        melted['carrier_name'] = pd.Categorical(
+            melted['carrier_name'],
+            categories=delay_sum['carrier_name'].tolist(),
+            ordered=True
+        )
 
+        # ✅ Step 6: Plot
+        fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
 
         ax.set_title("Top 3 Carriers: Delay Cause Breakdown", fontsize=12)
@@ -374,6 +380,7 @@ class FlightDataAnalysis:
         ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
         fig.tight_layout()
         return fig
+
 
 
 
