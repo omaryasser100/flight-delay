@@ -110,7 +110,7 @@ st.markdown(
     ''', unsafe_allow_html=True
 )
 
-with st.expander("📊 Column Explanations", expanded=False):
+with st.expander(" Column Explanations", expanded=False):
     st.markdown("""
 **🟦 Original Columns:**
 
