@@ -343,24 +343,52 @@ class FlightDataAnalysis:
 
 
     def delay_cause_breakdown_top3_carriers(self):
-        top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
+        # Step 1: Get top 3 carriers by total flight volume
+        top_3 = (
+            self.df.groupby('carrier_name')['arr_flights']
+            .sum()
+            .nlargest(3)
+            .index
+            .tolist()
+        )
+
+        # Step 2: Filter data to only top 3 carriers
         df = self.df[self.df['carrier_name'].isin(top_3)].copy()
 
-        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
-        delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
-        delay_sum = delay_sum.sort_values(by='total', ascending=True).drop(columns='total')
+        # Step 3: Sum delay causes
+        delay_sum = (
+            df.groupby('carrier_name')[self.delay_cols]
+            .sum()
+            .reset_index()
+        )
 
-        melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
+        # Step 4: Sort carriers by total delay
+        delay_sum['Total'] = delay_sum[self.delay_cols].sum(axis=1)
+        delay_sum = delay_sum.sort_values(by='Total', ascending=True).drop(columns='Total')
 
-        # ✅ This is the magic that fixes the x-axis clutter
+        # Step 5: Melt for seaborn
+        melted = delay_sum.melt(
+            id_vars='carrier_name',
+            var_name='Cause',
+            value_name='Total Delay'
+        )
+
+        # Step 6: Ensure x-axis is clean — keep only sorted top 3
         melted['carrier_name'] = pd.Categorical(
             melted['carrier_name'],
             categories=delay_sum['carrier_name'].tolist(),
             ordered=True
         )
 
+        # Step 7: Plot
         fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
+        sns.barplot(
+            data=melted,
+            x='carrier_name',
+            y='Total Delay',
+            hue='Cause',
+            ax=ax
+        )
 
         ax.set_title("Top 3 Carriers: Delay Cause Breakdown", fontsize=12)
         ax.set_ylabel("Total Delay Minutes", fontsize=10)
@@ -369,9 +397,10 @@ class FlightDataAnalysis:
         ax.tick_params(axis='y', labelsize=9)
         ax.grid(axis='y', linestyle='--', alpha=0.3)
         ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
-
         fig.tight_layout()
+
         return fig
+
 
 
 
