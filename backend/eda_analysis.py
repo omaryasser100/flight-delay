@@ -278,9 +278,12 @@ class FlightDataAnalysis:
     # 5. Carrier Behavior
     
     def avg_delay_ratio_per_carrier(self):
-        #  Group and sort ascending by delay ratio
+        # Group and sort ascending by delay ratio
         df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
         df = df.sort_values(by='delay_ratio', ascending=True)
+
+        # Explicitly set the order of carrier_name to preserve sort in the plot
+        df['carrier_name'] = pd.Categorical(df['carrier_name'], categories=df['carrier_name'], ordered=True)
 
         fig, ax = plt.subplots(figsize=(12, 5))
         sns.barplot(data=df, x='carrier_name', y='delay_ratio', ax=ax)
@@ -291,97 +294,6 @@ class FlightDataAnalysis:
         ax.tick_params(axis='x', labelrotation=45, labelsize=8)
         fig.tight_layout()
         return fig
-
-
-    def delay_ratio_across_seasons(self):
-        # Top 3 carriers by flight volume
-        top_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
-        df = self.df[self.df['carrier_name'].isin(top_carriers)].copy()
-
-        # Group and sort
-        df = df.groupby(['season', 'carrier_name'])['delay_ratio'].mean().reset_index()
-
-        # Sort seasons by total delay ratio
-        season_order = df.groupby('season')['delay_ratio'].mean().sort_values().index.tolist()
-
-        fig, ax = plt.subplots(figsize=(9, 5))  # slightly smaller but tighter
-
-        sns.barplot(
-            data=df,
-            x='season',
-            y='delay_ratio',
-            hue='carrier_name',
-            ax=ax,
-            order=season_order,
-            palette="Set2"
-        )
-
-        ax.set_title("Carrier Delay Ratio Across Seasons (Top 3 Airlines)", fontsize=12)
-        ax.set_ylabel("Average Delay Ratio", fontsize=10)
-        ax.set_xlabel("Season", fontsize=10)
-
-        # ✅ Improve ticks and grid
-        ax.tick_params(axis='x', labelsize=9)
-        ax.tick_params(axis='y', labelsize=9)
-        ax.grid(True, axis='y', linestyle='--', alpha=0.3)
-
-        # ✅ Clean Legend: shows only top 3, larger size, placed outside if space allows
-        handles, labels = ax.get_legend_handles_labels()
-        ax.legend(
-            handles=handles,
-            labels=labels,
-            title="Carrier",
-            title_fontsize=9,
-            fontsize=9,
-            loc='upper right',
-            bbox_to_anchor=(1.2, 1)
-        )
-
-        fig.tight_layout()
-        return fig
-
-
-
-    def delay_cause_breakdown_top3_carriers(self):
-        # Step 1: Get top 3 carriers by total flights
-        top_3_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index.tolist()
-
-        # Step 2: Filter only top 3 data
-        df = self.df[self.df['carrier_name'].isin(top_3_carriers)].copy()
-
-        # Step 3: Aggregate delay causes
-        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum()
-
-        # Step 4: Sort by total delay and keep top 3
-        delay_sum['Total'] = delay_sum.sum(axis=1)
-        delay_sum = delay_sum.sort_values('Total', ascending=True).drop(columns='Total')
-
-        # Step 5: Melt for plotting
-        melted = delay_sum.reset_index().melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
-
-        # 🔒 Enforce x-axis order by converting to categorical (kills ghost bars)
-        carrier_order = delay_sum.index.tolist()
-        melted['carrier_name'] = pd.Categorical(melted['carrier_name'], categories=carrier_order, ordered=True)
-
-        # Step 6: Plot
-        fig, ax = plt.subplots(figsize=(9, 5))
-        sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
-
-        ax.set_title("Top 3 Carriers: Delay Cause Breakdown", fontsize=12)
-        ax.set_xlabel("Carrier", fontsize=10)
-        ax.set_ylabel("Total Delay Minutes", fontsize=10)
-        ax.tick_params(axis='x', labelrotation=45, labelsize=9)
-        ax.tick_params(axis='y', labelsize=9)
-        ax.grid(axis='y', linestyle='--', alpha=0.4)
-        ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
-
-        fig.tight_layout()
-        return fig
-
-
-
-
-
 
 
 
