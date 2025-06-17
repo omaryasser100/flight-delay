@@ -343,30 +343,22 @@ class FlightDataAnalysis:
 
 
     def delay_cause_breakdown_top3_carriers(self):
-        # ✅ Step 1: Top 3 carriers by total flights
         top_3 = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
-
-        # ✅ Step 2: Filter dataset
         df = self.df[self.df['carrier_name'].isin(top_3)].copy()
 
-        # ✅ Step 3: Sum delay causes by carrier
         delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
-
-        # ✅ Step 4: Sort by total delay ascending
         delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
         delay_sum = delay_sum.sort_values(by='total', ascending=True).drop(columns='total')
 
-        # ✅ Step 5: Melt for seaborn barplot
         melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
 
-        # ✅ Force Seaborn to only use the sorted top 3
+        # ✅ This is the magic that fixes the x-axis clutter
         melted['carrier_name'] = pd.Categorical(
             melted['carrier_name'],
             categories=delay_sum['carrier_name'].tolist(),
             ordered=True
         )
 
-        # ✅ Step 6: Plot
         fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
 
@@ -376,10 +368,11 @@ class FlightDataAnalysis:
         ax.tick_params(axis='x', labelrotation=45, labelsize=9)
         ax.tick_params(axis='y', labelsize=9)
         ax.grid(axis='y', linestyle='--', alpha=0.3)
-
         ax.legend(title='Cause', fontsize=8, title_fontsize=9, loc='upper right', bbox_to_anchor=(1.2, 1))
+
         fig.tight_layout()
         return fig
+
 
 
 
