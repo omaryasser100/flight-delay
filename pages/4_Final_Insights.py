@@ -13,18 +13,7 @@ from utils.layout import (
 # ========== PAGE CONFIG ==========
 st.set_page_config(page_title="Business Insights", layout="wide", initial_sidebar_state="expanded")
 
-st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        html, body, [class*="css"] {
-            font-family: 'Roboto', sans-serif;
-        }
-        .welcome-text {
-            font-size: 1.3rem;
-            font-weight: 500;
-        }
-    </style>
-""", unsafe_allow_html=True)
+
 
 
 # ========== DARK MODE & TOKEN INIT ==========
@@ -72,16 +61,14 @@ render_sidebar_chatbot()
 
 # ========== EXECUTIVE SUMMARY ==========
 st.markdown("""
-    <div style="
-        background: rgba(255, 255, 255, 0.85);
+    <div style="background: rgba(255, 255, 255, 0.85);
         padding: 1.5rem 2rem;
         border-radius: 12px;
         text-align: center;
         font-size: 1.15rem;
         font-weight: 600;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
-    ">
+        margin-bottom: 1.5rem;; color: #000;">
     This section presents final business insights derived from comprehensive analysis of U.S. flight delay data. The goal is to translate complex data patterns into actionable recommendations for airlines, airports, and policymakers.
     </div>
 """, unsafe_allow_html=True)
@@ -132,16 +119,14 @@ insights =insights = [
 
 for title, body in insights:
     st.markdown(f"""
-        <div style="
-            background: rgba(255, 255, 255, 0.65);
+        <div style="background: rgba(255, 255, 255, 0.65);
             border-left: 5px solid #2a9d8f;
             padding: 1rem 1.5rem;
             margin-bottom: 1.2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        ">
-        <h4 style="margin-top:0;">{title}</h4>
-        <p style="font-size: 0.95rem; line-height: 1.6; font-family: 'Roboto', sans-serif;">{body}</p>
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);; color: #000;">
+        <h4 style="margin-top:0;; color: #000;">{title}</h4>
+        <p style="font-size: 0.95rem; line-height: 1.6;; color: #000;">{body}</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -164,12 +149,12 @@ st.markdown("""
 
 # ========== FOOTER ==========
 st.markdown("""
-<hr style="margin-top: 3rem; border: none; border-top: 1px solid rgba(255,255,255,0.3);">
+<hr style="margin-top: 3rem; border: none; border-top: 1px solid rgba(255,255,255,0.3);; color: #000;">
 <div style='
     text-align: center;
     padding: 1rem 0;
     color: white;
-    font-size: 0.9rem; font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem; 
     text-shadow: 0 0 3px rgba(0,0,0,0.5);
 '>
 Flight Delay Dashboard v1.0 — Built by Omar Yasser
