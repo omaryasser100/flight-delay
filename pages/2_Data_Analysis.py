@@ -500,7 +500,7 @@ with st.container():
     plot3, plot4 = st.columns(2)
     with plot3:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_cause_breakdown_top10_carriers())
+        st.pyplot(eda_fe.delay_cause_breakdown_top3_carriers())
 
     with plot4:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
