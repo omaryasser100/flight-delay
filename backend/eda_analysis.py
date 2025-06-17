@@ -282,11 +282,14 @@ class FlightDataAnalysis:
         df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
         df = df.sort_values(by='delay_ratio', ascending=True)
 
-        # Explicitly set the order of carrier_name to preserve sort in the plot
+        # ✅ Ensure carrier_name is string and categorical in sorted order
+        df['carrier_name'] = df['carrier_name'].astype(str)
         df['carrier_name'] = pd.Categorical(df['carrier_name'], categories=df['carrier_name'], ordered=True)
 
         fig, ax = plt.subplots(figsize=(12, 5))
-        sns.barplot(data=df, x='carrier_name', y='delay_ratio', ax=ax)
+
+        # ✅ Explicitly tell Seaborn not to reorder
+        sns.barplot(data=df, x='carrier_name', y='delay_ratio', ax=ax, order=df['carrier_name'])
 
         ax.set_title("Average Delay Ratio per Carrier")
         ax.set_ylabel("Delay Ratio")
@@ -294,6 +297,7 @@ class FlightDataAnalysis:
         ax.tick_params(axis='x', labelrotation=45, labelsize=8)
         fig.tight_layout()
         return fig
+
 
 
 
