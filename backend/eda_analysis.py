@@ -158,23 +158,36 @@ class FlightDataAnalysis:
     def plot_delay_causes_proportion_peak(self):
         peak = self.df[self.df['month'].isin([6, 7, 8, 12])]
         cause_sum = peak[self.delay_cols].sum()
+        
+        # ✅ Sort values ascending before plotting
+        cause_sum = cause_sum.sort_values(ascending=True)
+        
         fig, ax = plt.subplots(figsize=(6, 6))
         ax.pie(cause_sum.values, labels=cause_sum.index, autopct='%1.1f%%', startangle=90)
         ax.set_title("Delay Causes Proportion (Peak Months)")
         ax.axis("equal")
         return fig
 
+
     def plot_avg_delay_pct_by_cause(self):
+        # Calculate and sort average delay percentages by cause
         avg_pct = self.df[[f"{col}_pct" for col in self.delay_cols]].mean()
+        avg_pct = avg_pct.sort_values(ascending=True)
+
+        # Plot sorted values
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(x=avg_pct.index, y=avg_pct.values, ax=ax, palette="muted")
+
         ax.set_title("Average Delay Percentage by Cause")
+        ax.set_ylabel("Average % of Total Delay")
+        ax.set_xlabel("Delay Cause")
         plt.xticks(rotation=45)
         fig.tight_layout()
         return fig
 
+
     def plot_dominant_delay_causes_count(self):
-        count = self.df['dominant_delay_cause'].value_counts().reset_index()
+        count = self.df['dominant_delay_cause'].value_counts().sort_values().reset_index()
         count.columns = ['Cause', 'Count']
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=count, x='Cause', y='Count', ax=ax, palette="pastel")
@@ -187,43 +200,62 @@ class FlightDataAnalysis:
     # 4. Seasonal Patterns
     def plot_avg_delay_per_flight_seasonal(self):
         df = self.df.groupby('season')['mean_delay_per_flight'].mean().reset_index()
-        df = df.sort_values(by=df.columns[-1])
+        df = df.sort_values(by='mean_delay_per_flight')  # ✅ sort ascending
+
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='mean_delay_per_flight', ax=ax, palette='coolwarm')
         ax.set_title("Average Delay per Flight by Season")
+        ax.set_ylabel("Avg Delay (mins)")
+        ax.set_xlabel("Season")
         fig.tight_layout()
         return fig
+
 
     def plot_flights_per_season(self):
         df = self.df.groupby('season')['arr_flights'].sum().reset_index()
+        df = df.sort_values(by='arr_flights')  # ✅ sort ascending
+
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='arr_flights', ax=ax, palette='viridis')
         ax.set_title("Total Flights per Season")
+        ax.set_ylabel("Total Flights")
+        ax.set_xlabel("Season")
         fig.tight_layout()
         return fig
+
 
     def plot_delay_causes_seasonal_distribution(self):
         df = self.df.groupby('season')[self.delay_cols].sum().reset_index()
-        melted = df.melt(id_vars='season', var_name='Cause', value_name='Total Delay')
+        df['total'] = df[self.delay_cols].sum(axis=1)
+        df = df.sort_values(by='total')  # ✅ sort seasons by total delay
+
+        melted = df.drop(columns='total').melt(id_vars='season', var_name='Cause', value_name='Total Delay')
+
         fig, ax = plt.subplots(figsize=(9, 5))
         sns.barplot(data=melted, x='season', y='Total Delay', hue='Cause', ax=ax)
         ax.set_title("Delay Cause Distribution by Season")
+        ax.set_ylabel("Total Delay Minutes")
         fig.tight_layout()
         return fig
+
 
     def plot_disruption_rate_by_season(self):
         df = self.df.groupby('season')['disrupted'].mean().reset_index()
-        df = df.sort_values(by=df.columns[-1])
+        df = df.sort_values(by='disrupted')  # ✅ sort ascending
+
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='season', y='disrupted', ax=ax, palette='mako')
         ax.set_title("Disruption Rate by Season")
+        ax.set_ylabel("Disruption Rate")
+        ax.set_xlabel("Season")
         fig.tight_layout()
         return fig
 
+
     # 5. Carrier Behavior
-    # 5. Carrier Behavior
+    
     def avg_delay_ratio_per_carrier(self):
-        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index()
+        df = self.df.groupby('carrier_name')['delay_ratio'].mean().reset_index().sort_values(by='delay_ratio')
         fig, ax = plt.subplots(figsize=(12, 5))
         sns.barplot(data=df.sort_values('delay_ratio', ascending=False), x='carrier_name', y='delay_ratio', ax=ax)
         ax.set_title("Average Delay Ratio per Carrier")
@@ -234,37 +266,60 @@ class FlightDataAnalysis:
         return fig
 
     def delay_ratio_across_seasons(self):
-        # Filter to top 10 carriers by flight volume for better readability
-        top_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(10).index
+    # ✅ Get Top 3 carriers by total flight volume
+        top_carriers = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
         df = self.df[self.df['carrier_name'].isin(top_carriers)]
         df = df.groupby(['carrier_name', 'season'])['delay_ratio'].mean().reset_index()
-
+        # Optional: Sort seasons by total delay ratio (optional but helps with visual order)
+        season_order = (
+            df.groupby('season')['delay_ratio']
+            .mean()
+            .sort_values()
+            .index.tolist()
+        )
         fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=df, x='season', y='delay_ratio', hue='carrier_name', ax=ax)
-        ax.set_title("Carrier Delay Ratio Across Seasons (Top 10 Airlines)")
-        ax.set_ylabel("Delay Ratio")
+        sns.barplot(
+            data=df,
+            x='season',
+            y='delay_ratio',
+            hue='carrier_name',
+            ax=ax,
+            order=season_order  # ✅ enforce season sorting
+        )
+        ax.set_title("Carrier Delay Ratio Across Seasons (Top 3 Airlines)")
+        ax.set_ylabel("Average Delay Ratio")
         ax.set_xlabel("Season")
         ax.legend(title='Carrier', fontsize=7, title_fontsize=8, loc='upper right', bbox_to_anchor=(1.3, 1))
         fig.tight_layout()
         return fig
 
-    def delay_cause_breakdown_top10_carriers(self):
-        top = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(10).index
-        df = self.df[self.df['carrier_name'].isin(top)]
-        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
-        delay_sum['Total'] = delay_sum[self.delay_cols].sum(axis=1)
-        delay_sum = delay_sum.sort_values(by='Total', ascending=False).head(5)
-        melted = delay_sum.melt(id_vars='carrier_name', var_name='Cause', value_name='Total Delay')
 
-        fig, ax = plt.subplots(figsize=(12, 5))
+    def delay_cause_breakdown_top3_carriers(self):
+        #  Top 3 carriers by flight volume
+        top = self.df.groupby('carrier_name')['arr_flights'].sum().nlargest(3).index
+        df = self.df[self.df['carrier_name'].isin(top)]
+
+        #  Sum delay causes
+        delay_sum = df.groupby('carrier_name')[self.delay_cols].sum().reset_index()
+
+        #  Calculate total delay per carrier and sort
+        delay_sum['total'] = delay_sum[self.delay_cols].sum(axis=1)
+        delay_sum = delay_sum.sort_values(by='total')  # ✅ sort by total delay ascending
+        melted = delay_sum.drop(columns='total').melt(
+            id_vars='carrier_name',
+            var_name='Cause',
+            value_name='Total Delay'
+        )
+        fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(data=melted, x='carrier_name', y='Total Delay', hue='Cause', ax=ax)
-        ax.set_title("Top 10 Carriers: Delay Cause Breakdown")
+        ax.set_title("Top 3 Carriers: Delay Cause Breakdown")
         ax.set_ylabel("Total Delay Minutes")
         ax.set_xlabel("Carrier")
         ax.tick_params(axis='x', labelrotation=45, labelsize=8)
         ax.legend(title='Cause', fontsize=7, title_fontsize=8)
         fig.tight_layout()
         return fig
+
 
     def delay_cause_vs_disruption_correlation(self):
         summary = self.df.groupby('carrier_name').agg({
@@ -284,31 +339,44 @@ class FlightDataAnalysis:
 
     # 6. Airport Insights
     def top_airports_delay_metrics(self):
+        # Top 10 airports by total flights
         top = self.df.groupby('airport_name')['arr_flights'].sum().nlargest(10).index
         df_top = self.df[self.df['airport_name'].isin(top)].copy()
         df_top['airport_short'] = df_top['airport_name'].str[:10]
+
+        # Avg delay per flight
         avg_delay = df_top.groupby('airport_short')['mean_delay_per_flight'].mean().reset_index()
+
+        # Avg airport delay rate
         self.df['airport_delay_rate'] = pd.to_numeric(self.df['airport_delay_rate'], errors='coerce')
         delay_rate = self.df.groupby('airport_name')['airport_delay_rate'].mean().reset_index()
-
         delay_rate = delay_rate[delay_rate['airport_name'].isin(top)].copy()
         delay_rate['airport_short'] = delay_rate['airport_name'].str[:10]
+
+        # Merge and sort by average delay
         merged = pd.merge(avg_delay, delay_rate[['airport_short', 'airport_delay_rate']], on='airport_short')
-        fig, ax = plt.subplots(figsize=(9, 5))
+        merged = merged.sort_values(by='mean_delay_per_flight')  # ✅ sort by delay for intuitive visual
+
+        # Melt for bar plot
         melted = merged.melt(id_vars='airport_short', var_name='Metric', value_name='Value')
+
+        fig, ax = plt.subplots(figsize=(9, 5))
         sns.barplot(data=melted, x='airport_short', y='Value', hue='Metric', ax=ax)
         ax.set_title("Top Airports: Avg Delay vs Delay Rate")
+        ax.set_ylabel("Metric Value")
+        ax.set_xlabel("Airport (Short Code)")
         fig.tight_layout()
         return fig
+
 
     def delay_ratio_vs_flight_volume(self):
         df = self.df.copy()
 
-        # Aggregate data at the airport level
+        # Aggregate and sort by flight volume
         agg_df = df.groupby('airport_name').agg({
             'arr_flights': 'sum',
             'delay_ratio': 'mean'
-        }).reset_index()
+        }).reset_index().sort_values(by='arr_flights')  # ✅ sorted left to right
 
         fig, ax = plt.subplots(figsize=(10, 6))
         sns.scatterplot(
@@ -318,7 +386,7 @@ class FlightDataAnalysis:
             alpha=0.6,
             s=60,
             ax=ax,
-            color='steelblue'  # single color to avoid hue errors
+            color='steelblue'
         )
 
         ax.set_title("Airport-Level: Delay Ratio vs Flight Volume", fontsize=12)
@@ -327,6 +395,7 @@ class FlightDataAnalysis:
         ax.grid(True, linestyle='--', alpha=0.4)
         fig.tight_layout()
         return fig
+
 
 
 
@@ -369,10 +438,16 @@ class FlightDataAnalysis:
 
     # 7. Risk Insights
     def plot_delay_risk_level_distribution(self):
-        df = self.df['delay_risk_level'].value_counts(normalize=True).reset_index()
+        # Count and normalize risk levels, then sort ascending
+        df = self.df['delay_risk_level'].value_counts(normalize=True).sort_values().reset_index()
         df.columns = ['Risk Level', 'Proportion']
+
         fig, ax = plt.subplots(figsize=(7, 4))
         sns.barplot(data=df, x='Risk Level', y='Proportion', ax=ax, palette='Set2')
+
         ax.set_title("Distribution of Delay Risk Levels")
+        ax.set_ylabel("Proportion of Flights")
+        ax.set_xlabel("Risk Level")
         fig.tight_layout()
         return fig
+
