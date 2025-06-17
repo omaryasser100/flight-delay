@@ -95,7 +95,7 @@ with st.container():
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);"">
             <b>Yearly Flight Arrivals</b><br>
             Displays the total number of flight arrivals per year. This visualization helps identify long-term trends,
@@ -106,7 +106,7 @@ with st.container():
     with desc2:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);"">
             <b>Airline Share</b><br>
             This pie chart presents the share of each airline carrier in the dataset.
@@ -129,7 +129,7 @@ with st.container():
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85);
+        <div style="color: #000000; background: rgba(255,255,255,0.85);
         padding: 1rem; border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> The airline industry experienced strong growth from 2013–2019, followed by a sharp collapse in 2020 due to COVID-19. While 2021–2022 saw recovery in demand, the 2023 drop signals ongoing operational and economic volatility, emphasizing the need for resilient forecasting and agile capacity planning.
@@ -139,7 +139,7 @@ with st.container():
     with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85);
+        <div style="color: #000000; background: rgba(255,255,255,0.85);
         padding: 1rem; border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Flight activity is highly concentrated among a few dominant carriers — with OO, DL, and MQ leading. This imbalance skews overall delay trends toward the operational behaviors of these major airlines. However, the 26% of flights grouped under “Other” highlight the need for granular, carrier-specific analysis when assessing delay risk or crafting optimization strategies.
@@ -158,7 +158,7 @@ with st.container():
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Delay Ratio Over Time</b><br>
         This plot tracks the proportion of delayed flights (15+ mins) to total flights on a yearly basis. 
@@ -168,7 +168,7 @@ with st.container():
     with desc2:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Cancellation Rate Over Time</b><br>
         This chart shows the yearly trend in cancellations as a percentage of total scheduled flights. 
@@ -190,7 +190,7 @@ with st.container():
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Delay ratios rebounded post-2020, surpassing pre-pandemic levels by 2023 — 
@@ -202,7 +202,7 @@ with st.container():
     with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Excluding the 2020 crisis spike, cancellation rates have remained consistently low,
@@ -214,7 +214,7 @@ with st.container():
 # Row 4: Diversion Description (full-width)
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 st.markdown("""
-<div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
 border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
 <b>Diversion Rate Over Time</b><br>
 This lineplot represents the percentage of flights diverted from their intended destination each year. 
@@ -229,7 +229,7 @@ st.pyplot(eda_fe.plot_diversion_rate_yearly())
 # Row 6: Diversion Insight (still full-width)
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 st.markdown("""
-<div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
 border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
 box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
 <i>Insight:</i> Diversions are infrequent but have risen post-pandemic, peaking in 2023. 
@@ -249,7 +249,7 @@ with st.container():
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Average Delay % by Cause</b><br>
         This plot shows the average percentage of total delay attributed to each delay category. 
@@ -259,7 +259,7 @@ with st.container():
     with desc2:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Delay Causes (Peak Season)</b><br>
         This pie chart illustrates the distribution of delay causes during peak traffic months. 
@@ -281,7 +281,7 @@ with st.container():
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Carrier-related issues and late aircraft delays are the top contributors to total delay time,
@@ -292,7 +292,7 @@ with st.container():
     with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> During peak traffic months, late aircraft delays surge to over 40%, becoming the dominant disruption source. Carrier delays remain high as well, highlighting operational strain during holidays and summer travel. This suggests that airlines face major scalability issues in high-demand periods, and should invest in buffer strategies, flexible scheduling, and turnaround optimization to reduce cascading delays.
@@ -302,7 +302,7 @@ with st.container():
     # Row 4: Full-width description for third chart
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
     <b>Dominant Delay Cause (per flight)</b><br>
     This bar chart reveals the most common primary cause of delay at the flight level. 
@@ -316,7 +316,7 @@ with st.container():
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
     <i>Insight:</i> Most delayed flights are primarily caused by carrier-related and late aircraft delays — not external disruptions. This highlights deep-rooted internal inefficiencies like tight scheduling, crew availability, or inadequate turnaround buffers. These internal delays often create a ripple effect that propagates across the network, especially during high-frequency schedules. Tackling these leading causes offers the most direct path to performance improvement.
@@ -336,7 +336,7 @@ with st.container():
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Average Delay per Flight by Season</b><br>
         This bar chart displays the average delay time per flight for each season. 
@@ -346,7 +346,7 @@ with st.container():
     with desc2:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Total Flights per Season</b><br>
         This chart shows the total number of flights operated in each season. 
@@ -368,7 +368,7 @@ with st.container():
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Summer shows the highest average delay per flight, reflecting the operational strain of peak demand and tighter schedules. Winter delays are also elevated, likely due to weather-related challenges. In contrast, fall emerges as the most efficient season — offering a key opportunity for performance benchmarking.
@@ -378,7 +378,7 @@ with st.container():
     with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Summer leads in total flight volume, but winter’s lower traffic doesn’t guarantee fewer delays — suggesting that volume isn’t the sole disruption driver. Seasonal inefficiencies likely stem from a mix of demand surges and environmental factors, reinforcing the need for season-specific operational strategies.
@@ -400,7 +400,7 @@ with st.container():
     with insight3:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Summer brings a sharp rise in carrier and late aircraft delays, reflecting operational overload. Weather becomes the dominant disruptor in winter, while spring and summer see heavier NAS-related delays — suggesting seasonal congestion patterns in airspace and infrastructure.
@@ -410,7 +410,7 @@ with st.container():
     with insight4:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Winter suffers the highest proportion of disrupted flights despite lower traffic, indicating reduced reliability due to weather and seasonal volatility. Fall stands out as the most stable season — an operational benchmark for reliability and planning.
@@ -487,7 +487,7 @@ with st.container():
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Avg Delay vs Delay Rate (Top Airports)</b><br>
         Compares delay intensity and frequency among the 10 busiest airports. 
@@ -497,7 +497,7 @@ with st.container():
     with desc2:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
         <b>Delay Ratio vs Flight Volume</b><br>
         Visualizes the relationship between flight volume and average delay ratio across airports. 
@@ -519,7 +519,7 @@ with st.container():
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> Some major hubs — such as Chicago and San Francisco — consistently experience both longer and more frequent delays, suggesting structural or environmental constraints. Others, like Atlanta and Dallas, handle comparable traffic with lower disruption levels — making them operational benchmarks worth studying.
@@ -529,7 +529,7 @@ with st.container():
     with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
         border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
         <i>Insight:</i> High traffic volume does not necessarily lead to worse delay performance. Many large airports operate with low delay ratios, indicating that efficiency is driven more by management practices, layout, and resource allocation than by raw traffic volume alone.
@@ -539,7 +539,7 @@ with st.container():
     # Heatmap (full width)
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
     <b>Top Airports: Delay Cause Breakdown</b><br>
     Heatmap displaying the total number of delays by cause for the top 20 busiest airports. 
@@ -551,7 +551,7 @@ with st.container():
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
     <i>Insight:</i> This heatmap reveals clear delay type dominance across major U.S. airports, exposing location-specific vulnerabilities. For example, NAS delays plague Chicago and Newark, while carrier and late aircraft delays are the main bottlenecks at Atlanta and Dallas. These patterns enable targeted operational interventions — such as airspace coordination at ORD and turnaround efficiency improvements at ATL.
@@ -567,7 +567,7 @@ with st.container():
     # Description
     st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"">
     <b>Distribution of Delay Risk Levels</b><br>
     Breaks down the share of flights into low, medium, and high delay risk. 
@@ -581,7 +581,7 @@ with st.container():
     # Insight
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="<div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+    <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
     border-radius: 12px; min-height: 210px; max-height: 210px; overflow-y: auto;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.6; font-family: 'Roboto', sans-serif;"">
     <i>Insight:</i> While most flights are low risk, nearly 40% fall into medium to high delay risk categories — signaling a non-negligible vulnerability across the network. These insights are valuable for proactive planning, such as prioritizing resource allocation, adjusting buffer times, and targeting high-risk routes or carriers for operational reviews.
