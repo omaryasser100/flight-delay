@@ -423,8 +423,8 @@ with st.container():
 with st.container():
     st.subheader("Carrier Behavior")
 
-    # Row 1: Description (First plot only)
-    desc1, _ = st.columns(2)
+    # Row 1: Descriptions for both plots
+    desc1, desc2 = st.columns(2)
     with desc1:
         st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
         st.markdown("""
@@ -434,15 +434,28 @@ with st.container():
         This chart ranks airlines based on the average proportion of delayed flights. 
         It highlights overall reliability across the entire dataset.
         </div>""", unsafe_allow_html=True)
+    
+    with desc2:
+        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
+        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <b>Delay Cause vs Disruption Rate</b><br>
+        This scatterplot shows how different delay causes contribute to higher disruption rates across carriers.
+        </div>""", unsafe_allow_html=True)
 
-    # Row 2: First Plot (Sorted Ascending)
-    plot1, _ = st.columns(2)
+    # Row 2: Both plots side-by-side
+    plot1, plot2 = st.columns(2)
     with plot1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.avg_delay_ratio_per_carrier())  # Ensure your function supports this
+        st.pyplot(eda_fe.avg_delay_ratio_per_carrier())
 
-    # Row 3: Insight for First Plot
-    insight1, _ = st.columns(2)
+    with plot2:
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        st.pyplot(eda_fe.delay_cause_vs_disruption_correlation())
+
+    # Row 3: Both insights side-by-side
+    insight1, insight2 = st.columns(2)
     with insight1:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
@@ -453,26 +466,7 @@ with st.container():
         </div>
         """, unsafe_allow_html=True)
 
-    # Row 4: Description for Final Plot
-    _, desc4 = st.columns(2)
-    with desc4:
-        st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
-        border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-        <b>Delay Cause vs Disruption Rate</b><br>
-        This scatterplot shows how different delay causes contribute to higher disruption rates across carriers.
-        </div>""", unsafe_allow_html=True)
-
-    # Row 5: Final Plot (Unchanged)
-    _, plot4 = st.columns(2)
-    with plot4:
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.pyplot(eda_fe.delay_cause_vs_disruption_correlation())
-
-    # Row 6: Final Insight
-    _, insight4 = st.columns(2)
-    with insight4:
+    with insight2:
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         st.markdown("""
         <div style="color: #000000; background: rgba(255,255,255,0.85); padding: 1rem;
@@ -483,6 +477,7 @@ with st.container():
         """, unsafe_allow_html=True)
 
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+
 # === SECTION 6: AIRPORT INSIGHTS ===
 with st.container():
     st.subheader("Airport Insights")
