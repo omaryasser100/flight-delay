@@ -16,18 +16,7 @@ from backend.visual_explorer import VisualExplorer
 st.set_page_config(page_title="Explore Data", layout="wide", initial_sidebar_state="expanded")
 
 # ========== 🌐 LOAD GLOBAL FONTS ==========
-st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        html, body, [class*="css"] {
-            font-family: 'Roboto', sans-serif;
-        }
-        .welcome-text {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-    </style>
-""", unsafe_allow_html=True)
+
 
 # ========== DARK MODE & TOKEN INIT ==========
 query_params = st.query_params
@@ -141,8 +130,8 @@ c3.metric("Count", f"{most_common_count:,}")
 
 # ========== FOOTER ==========
 st.markdown("""
-<hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;">
-<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem; font-family: Roboto, sans-serif;'>
+<hr style="margin-top: 3rem; border: none; border-top: 1px solid #ccc;; color: #000;">
+<div style='text-align: center; padding: 1rem 0; color: #666; font-size: 0.9rem; '>
 Explore Page — Part of the Flight Delay Dashboard by <b>Omar Yasser</b>
 </div>
 """, unsafe_allow_html=True)
